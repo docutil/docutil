@@ -22,7 +22,7 @@ fn md_renderer(doc: ReadSignal<String>) -> View<G> {
 }
 
 #[component(MdView<G>)]
-pub fn md_view(src: ReadSignal<String>) -> View<G> {
+fn md_view(src: ReadSignal<String>) -> View<G> {
     let doc = Signal::new(String::from(""));
 
     create_effect(cloned!(doc => move || {
@@ -34,8 +34,17 @@ pub fn md_view(src: ReadSignal<String>) -> View<G> {
     }));
 
     view! {
-        div(class="md-view") {
+        div(class="post") {
             MdRenderer(doc.handle())
+        }
+    }
+}
+
+#[component(MarkNote<G>)]
+pub fn mark_note(md_src: ReadSignal<String>) -> View<G> {
+    view! {
+        div(class="root") {
+            MdView(md_src)
         }
     }
 }

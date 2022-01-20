@@ -1,8 +1,9 @@
 use sycamore::prelude::*;
 
-mod md_component;
+mod components;
+mod router;
 mod util;
-use md_component::*;
+use components::*;
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -11,13 +12,12 @@ fn main() {
     console_error_panic_hook::set_once();
     console_log::init_with_level(log::Level::Debug).unwrap();
 
-    sycamore::render(|| {
-        let md_src = Signal::new(String::from("/test.md"));
+    let route = router::get_route().unwrap_or_default();
+    let md_src = Signal::new(route.doc.unwrap_or("testdata/README.md".to_string()));
 
+    sycamore::render(|| {
         view! {
-            div(class="root") {
-                MdView(md_src.handle())
-            }
+            MarkNote(md_src.handle())
         }
     });
 }
