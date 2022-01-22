@@ -1,18 +1,31 @@
+use std::fmt::Display;
+
+use gloo::history::{HashHistory, History};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, Default)]
-pub struct Route {
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+pub struct SearchParams {
     pub doc: Option<String>,
     pub sidebar: Option<String>,
 }
 
-pub fn get_route() -> anyhow::Result<Route> {
-    let window = web_sys::window().unwrap();
-    let location = &window.location();
+#[derive(Debug, Clone)]
+pub struct Router {
+    hash_history: HashHistory,
+}
 
-    let search_str = location.search().unwrap_or("".to_string());
+impl Router {
+    pub fn new() -> Self {
+        Self {
+            hash_history: HashHistory::new(),
+        }
+    }
 
-    let route = serde_urlencoded::from_str::<Route>(search_str.strip_prefix('?').unwrap_or(""))?;
+    pub fn route(&self) -> anyhow::Result<(String, SearchParams)> {
+        let location = self.hash_history.location();
+        let path = location.path();
+        let search_params = location.query::<SearchParams>()?;
 
-    Ok(route)
+        Ok((path.to_string(), search_params))
+    }
 }
