@@ -3,12 +3,6 @@ name = "web"
 version = "0.1.0"
 edition = "2021"
 
-[profile.release]
-panic = 'abort'
-codegen-units = 1
-opt-level = 's'   # or 'z' to optimize "aggressively" for size
-lto = true
-
 [dependencies]
 anyhow = "1.0.52"
 console_error_panic_hook = "0.1.7"

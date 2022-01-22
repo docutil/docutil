@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use gloo::history::{HashHistory, History};
 use serde::{Deserialize, Serialize};
 
