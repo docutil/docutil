@@ -126,6 +126,7 @@ header > div {
   background-color: var(--white);
   border-radius: 0.3rem;
   box-shadow: var(--shadow);
+  min-height: calc(100vh - 200px);
 }
 
 .post-wrapper .toc {
