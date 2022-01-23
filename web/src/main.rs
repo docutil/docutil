@@ -27,20 +27,27 @@ fn main() {
     console_log::init_with_level(log::Level::Debug).unwrap();
 
     let router = Router::new();
-
-    let md_src = Signal::new(String::from("testdata/README.md"));
-    on_popstate(Box::new(cloned!((router, md_src) => move || {
+    let md_src = Signal::new(String::new());
+    let update_route = Box::new(cloned!((router, md_src) => move || {
         let (path, search_params) = router.route().unwrap();
+        let path = if path == "/" { String::from("/README.md") } else { path };
 
-        let doc = search_params.doc.unwrap_or(String::from("testdata/README.md"));
-        log::info!("[router] path: {}, doc: {}", path, doc);
+        let sidebar = search_params.sidebar.unwrap_or(String::from("/TOC.md"));
+        log::info!("[router] path: {}, sidebar: {}", path, sidebar);
 
-        md_src.set(doc);
-    })));
+        md_src.set(path);
+    }));
+
+    update_route();
+    on_popstate(update_route);
 
     sycamore::render(|| {
         view! {
-            MarkNote(md_src.handle())
+            div {
+                div {
+                    Post(md_src.handle())
+                }
+            }
         }
     });
 }

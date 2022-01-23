@@ -40,11 +40,17 @@ fn md_view(src: ReadSignal<String>) -> View<G> {
     }
 }
 
-#[component(MarkNote<G>)]
-pub fn mark_note(md_src: ReadSignal<String>) -> View<G> {
+#[component(SiteToc<G>)]
+pub fn site_toc() -> View<G> {
+    let doc = Signal::new(String::from("/TOC.md"));
     view! {
-        div(class="root") {
-            MdView(md_src)
-        }
+        MdView(doc.handle())
+    }
+}
+
+#[component(Post<G>)]
+pub fn post(md_src: ReadSignal<String>) -> View<G> {
+    view! {
+        MdView(md_src)
     }
 }
