@@ -104,6 +104,11 @@ header a:any-link {
   color: inherit;
 }
 
+header > div {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 .wrapper {
   width: 100%;
   margin-bottom: 1rem;
@@ -121,6 +126,17 @@ header a:any-link {
   background-color: var(--white);
   border-radius: 0.3rem;
   box-shadow: var(--shadow);
+}
+
+.post-wrapper .toc {
+  padding: 1rem 1.5rem;
+  position: relative;
+}
+
+.post-wrapper .toc .toc-content {
+  position: sticky;
+  top: 0;
+  left: 0;
 }
 
 footer {

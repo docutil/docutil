@@ -44,14 +44,20 @@ fn main() {
     sycamore::render(|| {
         view! {
             header {
-                a(href="/") {
-                    "hello, world"
-                } 
+                div {
+                    a(href="/") {
+                        "hello, world"
+                    }
+                }
             }
             div(class="wrapper") {
                 div(class="post-wrapper") {
                     Post(md_src.handle())
-                    dic(class="toc")
+                    div(class="toc") {
+                        div(class="toc-content") {
+                            "[TOC]"
+                        }
+                    }
                 }
             }
             footer {
