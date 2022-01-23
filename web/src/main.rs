@@ -43,9 +43,20 @@ fn main() {
 
     sycamore::render(|| {
         view! {
-            div {
-                div {
+            header {
+                a(href="/") {
+                    "hello, world"
+                } 
+            }
+            div(class="wrapper") {
+                div(class="post-wrapper") {
                     Post(md_src.handle())
+                    dic(class="toc")
+                }
+            }
+            footer {
+                div {
+                    "ICP xxxxxx"
                 }
             }
         }
