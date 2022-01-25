@@ -19,11 +19,18 @@ pub fn render_markdown(doc: &str) -> String {
 
     let parser = parser.map(|event| match event {
         Event::Start(Tag::Link(link_type, dest, title)) => {
-            log::info!("tag::link {:?}, {}, {}", link_type, dest, title);
+            // log::info!("tag::link {:?}, {}, {}", link_type, dest, title);
+            let _dest = dest.to_lowercase();
 
-            let dest_new = format!("/#/{}", dest).replace("//", "/");
-            let dest = CowStr::from(dest_new);
-            Event::Start(Tag::Link(link_type, dest, title)).into()
+            if _dest.starts_with("https://")
+                || _dest.starts_with("http://")
+                || _dest.starts_with("//")
+            {
+                Event::Start(Tag::Link(link_type, dest, title)).into()
+            } else {
+                let rewired = format!("/#/{}", dest).replace("//", "/");
+                Event::Start(Tag::Link(link_type, CowStr::from(rewired), title)).into()
+            }
         }
         _ => event,
     });
