@@ -27,15 +27,16 @@ fn main() {
     console_log::init_with_level(log::Level::Debug).unwrap();
 
     let router = Router::new();
-    let md_src = Signal::new(String::new());
-    let update_route = Box::new(cloned!((router, md_src) => move || {
+    let main_md = Signal::new(String::new());
+    let sidebar_md = Signal::new(String::from("SIDEBAR.md"));
+    let update_route = Box::new(cloned!((router, main_md) => move || {
         let (path, search_params) = router.route().unwrap();
         let path = if path == "/" { String::from("/README.md") } else { path };
 
         let sidebar = search_params.sidebar.unwrap_or(String::from("/TOC.md"));
         log::info!("[router] path: {}, sidebar: {}", path, sidebar);
 
-        md_src.set(path);
+        main_md.set(path);
     }));
 
     update_route();
@@ -52,17 +53,21 @@ fn main() {
             }
             div(class="wrapper") {
                 div(class="post-wrapper") {
-                    Post(md_src.handle())
-                    div(class="toc") {
-                        div(class="toc-content") {
-                            "[TOC]"
+                    article(class="post") {
+                        Post(main_md.handle())
+                    }
+                    sidebar(class="sidebar") {
+                        div(class="content-wrapper") {
+                            Post(sidebar_md.handle())
                         }
                     }
                 }
             }
             footer {
                 div {
-                    "ICP xxxxxx"
+                    a(href="https://beian.miit.gov.cn/") {
+                        "ICP备2021172595号"
+                    }
                 }
             }
         }

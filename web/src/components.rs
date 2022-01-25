@@ -34,9 +34,7 @@ fn md_view(src: ReadSignal<String>) -> View<G> {
     }));
 
     view! {
-        div(class="post") {
-            MdRenderer(doc.handle())
-        }
+        MdRenderer(doc.handle())
     }
 }
 
