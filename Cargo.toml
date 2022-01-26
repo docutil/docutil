@@ -1,5 +1,5 @@
 [workspace]
-members = ["cli", "web"]
+members = ["core"]
 
 [profile.release]
 panic = 'abort'

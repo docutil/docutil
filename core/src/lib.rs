@@ -5,7 +5,7 @@ mod components;
 mod router;
 mod util;
 use components::*;
-use wasm_bindgen::{prelude::Closure, JsCast};
+use wasm_bindgen::{prelude::{Closure, wasm_bindgen}, JsCast};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -22,7 +22,8 @@ fn on_popstate(f: Box<dyn FnMut()>) {
     closure.forget();
 }
 
-fn main() {
+#[wasm_bindgen]
+pub fn main() {
     console_error_panic_hook::set_once();
     console_log::init_with_level(log::Level::Debug).unwrap();
 
