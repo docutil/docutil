@@ -2,6 +2,9 @@
 name = "web"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "a pure-frontend site kit"
+repository = "https://github.com/yuekcc/marknote-next"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -32,3 +35,14 @@ web-sys = { version = "0.3.55", features = [
 ] }
 wee_alloc = "0.4.5"
 gloo = "0.6"
+
+[package.metadata.wasm-pack.profile.dev]
+wasm-opt = false
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Os"]
+
+[package.metadata.wasm-pack.profile.release.wasm-bindgen]
+debug-js-glue = false
+demangle-name-section = false
+dwarf-debug-info = false

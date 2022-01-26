@@ -19,7 +19,6 @@ pub fn render_markdown(doc: &str) -> String {
 
     let parser = parser.map(|event| match event {
         Event::Start(Tag::Link(link_type, dest, title)) => {
-            // log::info!("tag::link {:?}, {}, {}", link_type, dest, title);
             let _dest = dest.to_lowercase();
 
             if _dest.starts_with("https://")

@@ -5,7 +5,10 @@ mod components;
 mod router;
 mod util;
 use components::*;
-use wasm_bindgen::{prelude::{Closure, wasm_bindgen}, JsCast};
+use wasm_bindgen::{
+    prelude::{wasm_bindgen, Closure},
+    JsCast,
+};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -18,25 +21,21 @@ fn on_popstate(f: Box<dyn FnMut()>) {
         .add_event_listener_with_callback("popstate", closure.as_ref().unchecked_ref())
         .unwrap();
 
-    log::info!("on_popstate");
+    log::debug!("on_popstate");
     closure.forget();
 }
 
 #[wasm_bindgen]
 pub fn main() {
     console_error_panic_hook::set_once();
-    console_log::init_with_level(log::Level::Debug).unwrap();
+    console_log::init_with_level(log::Level::Info).unwrap();
 
     let router = Router::new();
     let main_md = Signal::new(String::new());
     let sidebar_md = Signal::new(String::from("SIDEBAR.md"));
     let update_route = Box::new(cloned!((router, main_md) => move || {
-        let (path, search_params) = router.route().unwrap();
+        let (path, _) = router.route().unwrap();
         let path = if path == "/" { String::from("/README.md") } else { path };
-
-        let sidebar = search_params.sidebar.unwrap_or(String::from("/TOC.md"));
-        log::info!("[router] path: {}, sidebar: {}", path, sidebar);
-
         main_md.set(path);
     }));
 
