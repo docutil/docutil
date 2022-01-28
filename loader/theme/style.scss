@@ -42,7 +42,7 @@ header {
     grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
     max-width: 960px;
 
-    .post + .sidebar {
+    .post + .aside {
       margin-left: 1rem;
     }
 
@@ -54,7 +54,7 @@ header {
       min-height: calc(100vh - 200px);
     }
 
-    .sidebar {
+    .aside {
       padding: 0;
       position: relative;
 

@@ -1,7 +1,9 @@
+use config::Config;
 use router::Router;
 use sycamore::prelude::*;
 
 mod components;
+mod config;
 mod router;
 mod util;
 use components::*;
@@ -26,16 +28,26 @@ fn on_popstate(f: Box<dyn FnMut()>) {
 }
 
 #[wasm_bindgen]
-pub fn main() {
+pub fn main(config: &Config) {
     console_error_panic_hook::set_once();
     console_log::init_with_level(log::Level::Info).unwrap();
 
+    let root = config.get_root_path();
+    let title = config.get_title();
+    let footer_message = config.get_footer_message();
+
     let router = Router::new();
     let main_md = Signal::new(String::new());
-    let sidebar_md = Signal::new(String::from("SIDEBAR.md"));
-    let update_route = Box::new(cloned!((router, main_md) => move || {
+    let sidebar_md = Signal::new(format!("{}{}", root, "SIDEBAR.md"));
+    let update_route = Box::new(cloned!((router, main_md, root) => move || {
         let (path, _) = router.route().unwrap();
-        let path = if path == "/" { String::from("/README.md") } else { path };
+        let home_page = format!("{}{}", root, "README.md").replace("//", "/");
+        let path = format!("{}{}",root, path).replace("//", "/");
+
+        log::info!("home_page = {}", home_page);
+        log::info!("path = {}", path);
+
+        let path = if path == root.as_str() { home_page } else { path };
         main_md.set(path);
     }));
 
@@ -46,8 +58,8 @@ pub fn main() {
         view! {
             header {
                 div {
-                    a(href="/") {
-                        "hello, world"
+                    a(href=root) {
+                        (title)
                     }
                 }
             }
@@ -56,7 +68,7 @@ pub fn main() {
                     article(class="post") {
                         Post(main_md.handle())
                     }
-                    sidebar(class="sidebar") {
+                    aside(class="aside") {
                         div(class="content-wrapper") {
                             Post(sidebar_md.handle())
                         }
@@ -65,9 +77,7 @@ pub fn main() {
             }
             footer {
                 div {
-                    a(href="https://beian.miit.gov.cn/") {
-                        "ICP备2021172595号"
-                    }
+                    (footer_message)
                 }
             }
         }
