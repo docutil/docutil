@@ -1,4 +1,4 @@
-use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
+use pulldown_cmark::{html, Event, Options, Parser, Tag};
 use reqwasm::http::Request;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -31,17 +31,20 @@ pub fn render_markdown(doc: &str) -> String {
                     Event::Start(Tag::Link(link_type, dest, title)).into()
                 } else {
                     let rewired = format!("/#/{}", dest).replace("//", "/");
-                    Event::Start(Tag::Link(link_type, CowStr::from(rewired), title)).into()
+                    Event::Start(Tag::Link(link_type, rewired.into(), title)).into()
                 }
             }
             Event::Start(Tag::Heading(level, id, class_list)) => {
                 get_heading = true;
-
                 Event::Start(Tag::Heading(level, id, class_list))
+            }
+            Event::End(Tag::Heading(level, id, class_list)) => {
+                get_heading = false;
+                Event::End(Tag::Heading(level, id, class_list))
             }
             Event::Text(text) => {
                 if get_heading {
-                    log::debug!("get heading: {}", text);
+                    log::info!("get heading: {}", text);
                 }
 
                 Event::Text(text)
