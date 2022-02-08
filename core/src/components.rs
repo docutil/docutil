@@ -5,7 +5,7 @@ use crate::util::{highlight_all, load_md_contents, render_markdown};
 
 #[component(MdRenderer<G>)]
 fn md_renderer(doc: ReadSignal<String>) -> View<G> {
-    let html = create_memo(cloned!(doc => move || {
+    let page = create_memo(cloned!(doc => move || {
         render_markdown((*doc.get()).as_str())
     }));
 
@@ -16,8 +16,12 @@ fn md_renderer(doc: ReadSignal<String>) -> View<G> {
         });
     }));
 
+    create_effect(cloned!(page => move || {
+        log::info!("outlines: {:?}", page.get().outlines)
+    }));
+
     view! {
-        div(class="markdown-body", dangerously_set_inner_html=(*html.get()).as_str())
+        div(class="markdown-body", dangerously_set_inner_html=page.get().html.as_str())
     }
 }
 
