@@ -114,3 +114,7 @@ pub fn render_markdown(doc: &str) -> MarkdownPage {
         outlines,
     }
 }
+
+pub fn render_one_markdown(doc: &str) -> String {
+    render_markdown(doc).html
+}

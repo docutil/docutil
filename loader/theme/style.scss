@@ -73,9 +73,9 @@ footer {
   padding: 0 1rem;
 
   & a:any-link {
-    color: inherit;
     text-decoration: none;
-    color: inherit;
+    background-color: transparent;
+    color: #0969da;
   }
 }
 
@@ -112,7 +112,7 @@ footer {
       .aside {
         padding: 1rem 1.5rem;
         position: unset;
-  
+
         .content-wrapper {
           position: unset;
           top: unset;

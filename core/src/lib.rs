@@ -1,6 +1,7 @@
 use config::Config;
 use router::Router;
 use sycamore::prelude::*;
+use util::render_one_markdown;
 use wasm_bindgen::{prelude::*, JsCast};
 
 mod components;
@@ -28,14 +29,14 @@ fn on_popstate(f: Box<dyn FnMut()>) {
 fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     let root = props.get_root_path();
     let title = props.get_title();
-    let footer_message = props.get_footer_message();
+    let footer_message = render_one_markdown(&props.get_footer_message());
 
     let main_md = create_rc_signal(String::new());
     let sidebar_md = create_rc_signal(format!("{}{}", root, "SIDEBAR.md"));
 
     {
         let router = Router::new();
-        
+
         let main_md = main_md.clone();
         let root = props.get_root_path();
         let update_route = Box::new(move || {
@@ -88,9 +89,7 @@ fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
             }
         }
         footer {
-            div {
-                (footer_message)
-            }
+            div(dangerously_set_inner_html=&footer_message)
         }
     }
 }
