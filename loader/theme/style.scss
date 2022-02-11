@@ -93,11 +93,11 @@ footer {
     box-shadow: var(--shadow);
 
     .post-wrapper {
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: 1fr auto;
-      grid-column-gap: 0;
-      grid-row-gap: 0;
+      display: block;
+      grid-template-columns: unset;
+      grid-template-rows: unset;
+      grid-column-gap: unset;
+      grid-row-gap: unset;
 
       max-width: 100%;
       width: 100%;
