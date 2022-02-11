@@ -5,7 +5,10 @@ import './style.css';
   await init();
 
   const { title, root, footer } = window.config || {};
-  const config = new Config().set_footer_message(footer).set_root_path(root).set_title(title);
+  const config = new Config()
+    .set_footer_message(footer || '')
+    .set_root_path(root || '/')
+    .set_title(title || 'docutil');
 
   main(config);
 })();
