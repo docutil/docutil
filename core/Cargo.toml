@@ -32,6 +32,7 @@ web-sys = { version = "0.3.55", features = [
     "PopStateEvent",
     "Url",
     "Window",
+    "Element",
 ] }
 wee_alloc = "0.4.5"
 gloo = "0.6"
