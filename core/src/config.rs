@@ -1,6 +1,8 @@
-use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::prelude::*;
+use sycamore::prelude::*;
 
 #[wasm_bindgen]
+#[derive(Prop, Clone, PartialEq, Eq)]
 pub struct Config {
     footer_message: String,
     root_path: String,
