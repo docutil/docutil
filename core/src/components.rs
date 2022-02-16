@@ -7,6 +7,55 @@ use crate::router::Router;
 use crate::util::{highlight_all, load_md_contents, render_markdown, render_one_markdown};
 
 #[component]
+pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
+    let div_ref = ctx.create_node_ref();
+    let wrapper_classes = create_rc_signal(String::from("back-top-wrapper hidden"));
+
+    let document = web_sys::window().unwrap().document().unwrap();
+
+    {
+        let on_scroll: Box<dyn Fn()> = Box::new({
+            let wrapper_classes = wrapper_classes.clone();
+            let document = document.clone();
+            move || {
+                let scroll_top = document.document_element().unwrap().scroll_top();
+                log::info!("on_scroll: {}", scroll_top);
+
+                if scroll_top > 300 {
+                    wrapper_classes.set(String::from("back-top-wrapper show"));
+                } else {
+                    wrapper_classes.set(String::from("back-top-wrapper hidden"));
+                }
+            }
+        });
+
+        let listener = Closure::wrap(on_scroll);
+        document
+            .add_event_listener_with_callback("scroll", listener.as_ref().unchecked_ref())
+            .unwrap();
+        listener.forget();
+    }
+
+    let scroll_top = {
+        let document = document.clone();
+        move || {
+            log::info!("scroll_top");
+            document.document_element().unwrap().set_scroll_top(0);
+        }
+    };
+
+    view! {ctx,
+        div(class=(*wrapper_classes.get()).clone()) {
+            div(ref=div_ref, on:click=move |_| {scroll_top()}) {
+                span(class="icon-top") {
+                    "△"
+                }
+            }
+        }
+    }
+}
+
+#[component]
 pub fn Post<'a, G: Html>(ctx: ScopeRef<'a>, md_src: &'a ReadSignal<String>) -> View<G> {
     let doc = ctx.create_signal(String::from(""));
 
@@ -124,5 +173,6 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
         footer {
             div(dangerously_set_inner_html=&footer_message)
         }
+        BackTop()
     }
 }

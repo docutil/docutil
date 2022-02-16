@@ -79,6 +79,33 @@ footer {
   }
 }
 
+.back-top-wrapper {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 12px;
+
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease-in-out;
+  color: var(--color-white);
+  padding: 5px;
+  cursor: pointer;
+  width: 2rem;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  
+  &.show {
+    display: block;
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
 // 992px is copy from bootstrap breakpoints Large size
 @media screen and (max-width: 992px) {
   header {
