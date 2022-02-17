@@ -91,7 +91,7 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
             move || {
                 let document_element = document.document_element().unwrap_throw();
                 let scroll_top = document_element.scroll_top();
-                log::info!("on_scroll: {}", scroll_top);
+                log::debug!("on_scroll: {}", scroll_top);
 
                 if scroll_top > 300 {
                     wrapper_classes.set(String::from("back-top-wrapper show"));
