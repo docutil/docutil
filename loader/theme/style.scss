@@ -115,6 +115,89 @@ footer {
   }
 }
 
+.search-box {
+  padding: 5px;
+  border: 1px solid var(--color-gray);
+  border-radius: 4px;
+  line-height: 1.8;
+  display: flex;
+  margin-bottom: 1rem;
+
+  input {
+    flex: 1;
+    padding: 5px;
+    border: 0;
+    height: 100%;
+  }
+
+  button {
+    flex: initial;
+    border: 0;
+    background-color: #3b6837;
+  }
+}
+
+.search-result-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+
+  &.hidden {
+    display: none;
+  }
+
+  &.show {
+    display: block;
+  }
+
+  & .search-result {
+    margin-top: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--color-white);
+    box-shadow: var(--shadow);
+    width: 650px;
+    max-width: 100%;
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--color-gray);
+      box-shadow: var(--shadow);
+      padding: 10px;
+
+      & > div {
+        flex: initial;
+      }
+    }
+
+    .body {
+      height: 500px;
+      overflow-y: auto;
+      padding: 10px;
+
+      & > ul {
+        & li {
+          word-break: break-all;
+          border: 1px solid var(--color-gray);
+          box-shadow: var(--shadow);
+          margin-bottom: 0.5rem;
+          border-radius: 4px;
+          padding: 5px;
+
+          a:any-link {
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+}
+
 // 992px is copy from bootstrap breakpoints Large size
 @media screen and (max-width: 992px) {
   header {

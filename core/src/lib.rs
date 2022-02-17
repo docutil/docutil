@@ -5,6 +5,7 @@ mod components;
 mod config;
 mod router;
 mod util;
+mod search;
 use components::*;
 use config::Config;
 
@@ -15,7 +16,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn main(config: &Config) {
     console_error_panic_hook::set_once();
     console_log::init_with_level(log::Level::Debug).unwrap();
-
+    
     sycamore::render(|ctx| {
         view! {ctx,
             App(config)

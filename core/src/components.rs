@@ -3,7 +3,78 @@ use wasm_bindgen::{prelude::*, JsCast};
 
 use crate::config::Config;
 use crate::router::Router;
+use crate::search::*;
 use crate::util::{highlight_all, load_md_contents, render_markdown, render_one_markdown};
+
+#[component]
+pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
+    let keyword = ctx.create_signal(String::new());
+    let search_result = ctx.create_signal(vec![]);
+    let dialog_classes = ctx.create_signal(String::from("search-result-dialog hidden"));
+
+    let search = {
+        move || {
+            let text = (*keyword.get()).clone();
+            if text.is_empty() {
+                return;
+            }
+
+            let search_result = search_result.clone();
+            ctx.spawn_future(async move {
+                let result = remote_search(&text, 1, 100).await.unwrap();
+                log::info!("remote_search result is: {:?}", result);
+                search_result.set(result);
+                dialog_classes.set(String::from("search-result-dialog show"))
+            });
+        }
+    };
+
+    let close = {
+        let dialog_classes = dialog_classes.clone();
+        let search_result = search_result.clone();
+        let keyword = keyword.clone();
+        move || {
+            dialog_classes.set(String::from("search-result-dialog hidden"));
+            search_result.set(vec![]);
+            keyword.set(String::new())
+        }
+    };
+
+    view! {ctx,
+        div(class="search-box") {
+            input(bind:value=keyword)
+            button(on:click=move |_| {search()}) {
+                "🔎"
+            }
+        }
+        div(class=dialog_classes) {
+            div(class="search-result") {
+                div(class="title") {
+                    div { "搜索结果" }
+                    div {
+                        button(on:click=move |_| close()) {
+                            "❌"
+                        }
+                    }
+                }
+                div(class="body") {
+                    ul {
+                        Indexed {
+                            iterable: search_result,
+                            view: |ctx, it| view! {ctx,
+                                li {
+                                    a(href=format!("/#/{}",it.path)) {
+                                        (it.line)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 #[component]
 pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
@@ -168,6 +239,9 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
                     Post(_main_md)
                 }
                 aside(class="aside") {
+                    div {
+                        SearchDialog()
+                    }
                     div(class="content-wrapper") {
                         Post(_sidebar_md)
                     }
