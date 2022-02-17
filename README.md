@@ -1,8 +1,6 @@
 # docutil
 
-[marknote](https://github.com/yuekcc/marknote) 重写版本。使用 rust + sycamore。
-
-由 2022年02月11日 开始，marknote-next 改名为 **docutil**。
+docutil 是一个简单快速的网站工具，适用于小型的文档网站。docutil 所有渲染都在浏览器上完成，无需后台。
 
 ## 效果
 
