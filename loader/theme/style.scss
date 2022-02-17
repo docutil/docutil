@@ -30,6 +30,15 @@ header {
   & > div {
     max-width: 960px;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+
+    .title {
+      flex: initial;
+    }
+    .quick-links {
+      flex: initial;
+    }
   }
 }
 
@@ -96,7 +105,7 @@ footer {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  
+
   &.show {
     display: block;
   }

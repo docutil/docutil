@@ -1,6 +1,6 @@
 all: build-core build-default-theme build-loader
 
-debug: build-core-debug build-loader
+debug: build-core-debug build-default-theme build-loader
 
 build-loader:
     #!/bin/sh

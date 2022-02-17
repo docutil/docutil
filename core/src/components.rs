@@ -1,6 +1,5 @@
 use sycamore::{futures::ScopeSpawnFuture, prelude::*};
 use wasm_bindgen::{prelude::*, JsCast};
-use web_sys::Element;
 
 use crate::config::Config;
 use crate::router::Router;
@@ -11,14 +10,16 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
     let div_ref = ctx.create_node_ref();
     let wrapper_classes = create_rc_signal(String::from("back-top-wrapper hidden"));
 
-    let document = web_sys::window().unwrap().document().unwrap();
+    let window = web_sys::window().unwrap_throw();
+    let document = window.document().unwrap_throw();
 
     {
         let on_scroll: Box<dyn Fn()> = Box::new({
             let wrapper_classes = wrapper_classes.clone();
             let document = document.clone();
             move || {
-                let scroll_top = document.document_element().unwrap().scroll_top();
+                let document_element = document.document_element().unwrap_throw();
+                let scroll_top = document_element.scroll_top();
                 log::info!("on_scroll: {}", scroll_top);
 
                 if scroll_top > 300 {
@@ -32,15 +33,16 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
         let listener = Closure::wrap(on_scroll);
         document
             .add_event_listener_with_callback("scroll", listener.as_ref().unchecked_ref())
-            .unwrap();
+            .unwrap_throw();
         listener.forget();
     }
 
     let scroll_top = {
         let document = document.clone();
         move || {
-            log::info!("scroll_top");
-            document.document_element().unwrap().set_scroll_top(0);
+            log::debug!("scroll_top");
+            let document_element = document.document_element().unwrap_throw();
+            document_element.set_scroll_top(0);
         }
     };
 
@@ -85,9 +87,9 @@ fn on_popstate(f: Box<dyn FnMut()>) {
     let closure = Closure::wrap(f);
 
     web_sys::window()
-        .unwrap()
+        .unwrap_throw()
         .add_event_listener_with_callback("popstate", closure.as_ref().unchecked_ref())
-        .unwrap();
+        .unwrap_throw();
 
     log::debug!("on_popstate");
     closure.forget();
@@ -101,7 +103,6 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
 
     let main_md = create_rc_signal(String::new());
     let sidebar_md = create_rc_signal(format!("{}{}", root, "SIDEBAR.md"));
-    let header_ref = ctx.create_node_ref();
 
     {
         let router = Router::new();
@@ -109,12 +110,12 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
         let main_md = main_md.clone();
         let root = props.get_root_path();
         let update_route = Box::new(move || {
-            let (path, _) = router.route().unwrap();
+            let (path, _) = router.route().unwrap_throw();
             let home_page = format!("{}{}", root, "README.md").replace("//", "/");
             let path = format!("{}{}", root, path).replace("//", "/");
 
-            log::info!("home_page = {}", home_page);
-            log::info!("path = {}", path);
+            log::debug!("home_page = {}", home_page);
+            log::debug!("path = {}", path);
 
             let path = if path == root.as_str() {
                 home_page
@@ -141,21 +142,24 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     ctx.create_effect(|| {
         _main_md.track();
 
-        let _header_ref = header_ref.clone();
-        ctx.spawn_future(async move {
-            log::info!("scroll to header");
-            let el = _header_ref.try_get::<DomNode>();
-            let el = el.unwrap();
-            el.unchecked_into::<Element>().scroll_into_view();
+        ctx.spawn_future(async {
+            let window = web_sys::window().unwrap_throw();
+            let document = window.document().unwrap_throw();
+            let document_element = document.document_element().unwrap_throw();
+
+            document_element.set_scroll_top(0);
         });
     });
 
     view! {ctx,
         header {
-            div(ref=header_ref) {
-                a(href=root) {
-                    (title)
+            div {
+                div(class="title") {
+                    a(href=root) {
+                        (title)
+                    }
                 }
+                div(class="quick-links")
             }
         }
         div(class="wrapper") {
