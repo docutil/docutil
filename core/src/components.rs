@@ -28,7 +28,7 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
                     let result = remote_search(&text, 1, 100).await.unwrap();
                     log::info!("remote_search result is: {:?}", result);
                     search_result.set(result);
-                    dialog_classes.set(String::from("search-result-dialog show"))
+                    dialog_classes.set(String::from("modal search-result-dialog show"))
                 });
             }
         }
@@ -39,33 +39,31 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
         let search_result = search_result.clone();
         let keyword = keyword.clone();
         move |_: Event| {
-            dialog_classes.set(String::from("search-result-dialog hidden"));
+            dialog_classes.set(String::from("modal search-result-dialog hidden"));
             search_result.set(vec![]);
             keyword.set(String::new())
         }
     };
 
     view! {ctx,
-        div(class="block") {
+        div(class="search-box") {
             input(bind:value=keyword, on:keypress=search, placeholder="搜索 ...", class="input is-rounded", type="search")
         }
         div(class=dialog_classes) {
-            div(class="search-result") {
-                div(class="title") {
-                    div { "搜索结果" }
-                    div {
-                        button(on:click=close) {
-                            "❌"
-                        }
-                    }
+            div(class="modal-background", on:click=close)
+            div(class="modal-card mt-4") {
+                div(class="modal-card-head p-3") {
+                    p(class="modal-card-title") { "搜索结果" }
+                    button(class="delete", aria-label="close", on:click=close)
                 }
-                div(class="body") {
+                div(class="modal-card-body markdown-body") {
+                    h2 { "搜索结果" }
                     ul {
                         Indexed {
                             iterable: search_result,
-                            view: |ctx, it| view! {ctx,
-                                li {
-                                    a(href=format!("/#/{}",it.path)) {
+                            view: move |ctx, it| view! {ctx,
+                                li(class="box") {
+                                    a(href=format!("/#/{}",it.path), on:click=close) {
                                         (it.line)
                                     }
                                 }
@@ -113,11 +111,9 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
     };
 
     view! {ctx,
-        div(class=(*wrapper_classes.get()).clone()) {
+        div(class=(*wrapper_classes.get()).clone(), title="回到顶部") {
             div(ref=div_ref, on:click=move |_| {scroll_top()}) {
-                span(class="icon-top") {
-                    "△"
-                }
+                span(class="icon icon-top")
             }
         }
     }
@@ -212,33 +208,41 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     });
 
     view! {ctx,
-        header {
-            div {
-                div(class="title") {
-                    a(href=root) {
-                        (title)
-                    }
-                }
-                div(class="quick-links")
-            }
-        }
-        div(class="wrapper") {
-            div(class="post-wrapper") {
-                article(class="post") {
-                    Post(_main_md)
-                }
-                aside(class="aside") {
-                    div(class="content-wrapper") {
-                        div {
-                            SearchDialog()
+        header(class="mb-4") {
+            div(class="container") {
+                div(class="columns is-align-content-space-between is-align-items-center") {
+                    div(class="column m-0 title") {
+                        a(href=root) {
+                            (title)
                         }
-                        Post(_sidebar_md)
+                    }
+                    div(class="column m-0 quick-links")
+                }
+            }
+        }
+        section(class="mb-4") {
+            div(class="container") {
+                div(class="columns") {
+                    article(class="column is-3-4 box post") {
+                        Post(_main_md)
+                    }
+                    aside(class="column aside") {
+                        div(class="content-wrapper") {
+                            div(class="mb-4") {
+                                SearchDialog()
+                            }
+                            div {
+                                Post(_sidebar_md)
+                            }
+                        }
                     }
                 }
             }
         }
-        footer {
-            div(dangerously_set_inner_html=&footer_message)
+        footer(class="mb-4") {
+            div(class="container pl-2 pr-2") {
+                div(dangerously_set_inner_html=&footer_message)
+            }
         }
         BackTop()
     }
