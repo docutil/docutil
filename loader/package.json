@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild --outfile=dist/index.mjs --platform=browser --target=chrome83 src/index.js --format=esm --bundle --minify",
+    "build": "esbuild --outfile=dist/index.mjs --platform=browser --target=chrome83 src/index.js --format=esm --bundle --minify --loader:.svg=dataurl",
     "install-wasm": "cp ../core/pkg/*.wasm dist/",
     "serve": "sirv --dev ."
   },
