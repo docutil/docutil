@@ -2,6 +2,7 @@ use std::vec;
 
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
+use web_sys::RequestMode;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Hit {
@@ -14,7 +15,7 @@ pub struct SearchResult {
     pub hits: Vec<Hit>,
     pub limit: u32,
     pub offset: u32,
-    
+
     #[serde(rename = "nbHits")]
     pub nb_hits: u64,
 }
@@ -28,7 +29,7 @@ pub async fn remote_search(
     // TODO uri encode 处理
     let url = format!("{base_url}?keyword={keyword}&pageIndex={page_index}&pageSize={page_size}");
 
-    let req = Request::new(&url).send().await?;
+    let req = Request::new(&url).mode(RequestMode::Cors).send().await?;
     let result = req.json::<SearchResult>().await;
     if result.is_ok() {
         Ok(result.unwrap().hits)

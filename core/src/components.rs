@@ -1,5 +1,7 @@
+use gloo::utils::{document, document_element, window};
 use sycamore::{futures::ScopeSpawnFuture, prelude::*};
 use wasm_bindgen::{prelude::*, JsCast};
+use web_sys::{Event, KeyboardEvent};
 
 use crate::config::Config;
 use crate::router::Router;
@@ -13,19 +15,22 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
     let dialog_classes = ctx.create_signal(String::from("search-result-dialog hidden"));
 
     let search = {
-        move || {
+        move |event: Event| {
             let text = (*keyword.get()).clone();
             if text.is_empty() {
                 return;
             }
 
-            let search_result = search_result.clone();
-            ctx.spawn_future(async move {
-                let result = remote_search(&text, 1, 100).await.unwrap();
-                log::info!("remote_search result is: {:?}", result);
-                search_result.set(result);
-                dialog_classes.set(String::from("search-result-dialog show"))
-            });
+            let event = event.dyn_into::<KeyboardEvent>().unwrap();
+            if event.key_code() == 13 {
+                let search_result = search_result.clone();
+                ctx.spawn_future(async move {
+                    let result = remote_search(&text, 1, 100).await.unwrap();
+                    log::info!("remote_search result is: {:?}", result);
+                    search_result.set(result);
+                    dialog_classes.set(String::from("search-result-dialog show"))
+                });
+            }
         }
     };
 
@@ -33,7 +38,7 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
         let dialog_classes = dialog_classes.clone();
         let search_result = search_result.clone();
         let keyword = keyword.clone();
-        move || {
+        move |_: Event| {
             dialog_classes.set(String::from("search-result-dialog hidden"));
             search_result.set(vec![]);
             keyword.set(String::new())
@@ -41,18 +46,15 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
     };
 
     view! {ctx,
-        div(class="search-box") {
-            input(bind:value=keyword)
-            button(on:click=move |_| {search()}) {
-                "🔎"
-            }
+        div(class="block") {
+            input(bind:value=keyword, on:keypress=search, placeholder="搜索 ...", class="input is-rounded", type="search")
         }
         div(class=dialog_classes) {
             div(class="search-result") {
                 div(class="title") {
                     div { "搜索结果" }
                     div {
-                        button(on:click=move |_| close()) {
+                        button(on:click=close) {
                             "❌"
                         }
                     }
@@ -81,16 +83,11 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
     let div_ref = ctx.create_node_ref();
     let wrapper_classes = create_rc_signal(String::from("back-top-wrapper hidden"));
 
-    let window = web_sys::window().unwrap_throw();
-    let document = window.document().unwrap_throw();
-
     {
         let on_scroll: Box<dyn Fn()> = Box::new({
             let wrapper_classes = wrapper_classes.clone();
-            let document = document.clone();
             move || {
-                let document_element = document.document_element().unwrap_throw();
-                let scroll_top = document_element.scroll_top();
+                let scroll_top = document_element().scroll_top();
                 log::debug!("on_scroll: {}", scroll_top);
 
                 if scroll_top > 300 {
@@ -102,18 +99,16 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
         });
 
         let listener = Closure::wrap(on_scroll);
-        document
+        document()
             .add_event_listener_with_callback("scroll", listener.as_ref().unchecked_ref())
             .unwrap_throw();
         listener.forget();
     }
 
     let scroll_top = {
-        let document = document.clone();
         move || {
             log::debug!("scroll_top");
-            let document_element = document.document_element().unwrap_throw();
-            document_element.set_scroll_top(0);
+            document_element().set_scroll_top(0);
         }
     };
 
@@ -130,7 +125,7 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
 
 #[component]
 pub fn Post<'a, G: Html>(ctx: ScopeRef<'a>, md_src: &'a ReadSignal<String>) -> View<G> {
-    let doc = ctx.create_signal(String::from(""));
+    let doc = ctx.create_signal(String::from("loading ..."));
 
     ctx.create_effect(move || {
         let url = (*md_src.get()).clone();
@@ -157,12 +152,10 @@ pub fn Post<'a, G: Html>(ctx: ScopeRef<'a>, md_src: &'a ReadSignal<String>) -> V
 fn on_popstate(f: Box<dyn FnMut()>) {
     let closure = Closure::wrap(f);
 
-    web_sys::window()
-        .unwrap_throw()
+    window()
         .add_event_listener_with_callback("popstate", closure.as_ref().unchecked_ref())
         .unwrap_throw();
 
-    log::debug!("on_popstate");
     closure.forget();
 }
 
@@ -214,11 +207,7 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
         _main_md.track();
 
         ctx.spawn_future(async {
-            let window = web_sys::window().unwrap_throw();
-            let document = window.document().unwrap_throw();
-            let document_element = document.document_element().unwrap_throw();
-
-            document_element.set_scroll_top(0);
+            document_element().set_scroll_top(0);
         });
     });
 
@@ -239,10 +228,10 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
                     Post(_main_md)
                 }
                 aside(class="aside") {
-                    div {
-                        SearchDialog()
-                    }
                     div(class="content-wrapper") {
+                        div {
+                            SearchDialog()
+                        }
                         Post(_sidebar_md)
                     }
                 }
