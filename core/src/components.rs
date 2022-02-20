@@ -208,9 +208,9 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     });
 
     view! {ctx,
-        header(class="mb-4") {
-            div(class="container") {
-                div(class="columns is-align-content-space-between is-align-items-center") {
+        header(class="lg:mb-4 mb-0") {
+            div(class="container p-2") {
+                div(class="columns justify-center items-center") {
                     div(class="column m-0 title") {
                         a(href=root) {
                             (title)
@@ -223,11 +223,11 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
         section(class="mb-4") {
             div(class="container") {
                 div(class="columns") {
-                    article(class="column is-3-4 box post") {
+                    article(class="column is-3-4 shadow-md rounded-md bg-white post px-4 py-6") {
                         Post(_main_md)
                     }
                     aside(class="column aside") {
-                        div(class="content-wrapper") {
+                        div(class="content-wrapper pt-4") {
                             div(class="mb-4") {
                                 SearchDialog()
                             }
@@ -239,8 +239,8 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
                 }
             }
         }
-        footer(class="mb-4") {
-            div(class="container pl-2 pr-2") {
+        footer(class="mb-4 pb-12") {
+            div(class="container px-4") {
                 div(dangerously_set_inner_html=&footer_message)
             }
         }

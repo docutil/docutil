@@ -16,11 +16,11 @@ body {
   background-color: var(--main-bg);
 }
 
-.box {
-  background-color: var(--color-white);
-  box-shadow: var(--shadow);
-  border-radius: 4px;
-}
+// .box {
+//   background-color: var(--color-white);
+//   box-shadow: var(--shadow);
+//   border-radius: 4px;
+// }
 
 input[type="search"] {
   padding: 4px 8px;
@@ -42,8 +42,6 @@ input[type="search"] {
 header {
   background-color: var(--header-bg);
   font-size: 1.5rem;
-  margin-bottom: 2rem;
-  padding: 0.5rem;
 
   & a:any-link {
     color: var(--color-white);
@@ -52,7 +50,6 @@ header {
 }
 
 .post {
-  padding: 1rem 1.5rem;
   min-height: calc(100vh - 200px);
 }
 
@@ -60,7 +57,6 @@ header {
   position: relative;
 
   .content-wrapper {
-    padding-top: 1rem;
     position: sticky;
     top: 0;
     left: 0;
@@ -70,7 +66,6 @@ header {
 footer {
   color: var(--color-gray);
   font-size: 0.85rem;
-  padding: 0 1rem 3rem 1rem;
 
   & a:any-link {
     text-decoration: none;
@@ -130,9 +125,9 @@ footer {
 
 // 992px is copy from bootstrap breakpoints Large size
 @media screen and (max-width: 992px) {
-  header {
-    margin-bottom: 0;
-  }
+  // header {
+  //   margin-bottom: 0;
+  // }
 
   .post {
     padding: 1rem 1.5rem;
