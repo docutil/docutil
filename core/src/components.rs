@@ -227,7 +227,7 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
         section(class=":mb-4") {
             div(class="container") {
                 div(class="columns") {
-                    article(class="column post is-3-4 :shadow lg:rounded :bg-white :px-4 :py-6") {
+                    article(class="column post is-3-4 :shadow lg:rounded :bg-white :p-8") {
                         Post(_main_md)
                     }
                     aside(class="column aside :shadow lg:shadow-none") {
