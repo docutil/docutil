@@ -10,9 +10,11 @@ use crate::util::{highlight_all, load_md_contents, render_markdown, render_one_m
 
 #[component]
 pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
+    let modal_default_classes = "search-result-dialog modal :backdrop-blur-sm lg:bg-slate-700";
+
     let keyword = ctx.create_signal(String::new());
     let search_result = ctx.create_signal(vec![]);
-    let dialog_classes = ctx.create_signal(String::from("search-result-dialog hidden"));
+    let dialog_classes = ctx.create_signal(format!("{} {}", modal_default_classes, "hidden"));
 
     let search = {
         move |event: Event| {
@@ -28,7 +30,7 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
                     let result = remote_search(&text, 1, 100).await.unwrap();
                     log::info!("remote_search result is: {:?}", result);
                     search_result.set(result);
-                    dialog_classes.set(String::from("modal search-result-dialog show"))
+                    dialog_classes.set(format!("{} {}", modal_default_classes, "show"))
                 });
             }
         }
@@ -39,7 +41,7 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
         let search_result = search_result.clone();
         let keyword = keyword.clone();
         move |_: Event| {
-            dialog_classes.set(String::from("modal search-result-dialog hidden"));
+            dialog_classes.set(format!("{} {}", modal_default_classes, "hidden"));
             search_result.set(vec![]);
             keyword.set(String::new())
         }
@@ -47,22 +49,24 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
 
     view! {ctx,
         div(class="search-box") {
-            input(bind:value=keyword, on:keypress=search, placeholder="搜索 ...", class="input is-rounded", type="search")
+            input(bind:value=keyword,
+                on:keypress=search,
+                placeholder="搜索 ...",
+                class=":shadow :rounded :px-2 :py-1 :border-none :w-full",
+                type="search")
         }
         div(class=dialog_classes) {
-            div(class="modal-background", on:click=close)
-            div(class="modal-card mt-4") {
-                div(class="modal-card-head p-3") {
+            div(class="modal-card :bg-white lg:rounded-md lg:shadow-md lg:border") {
+                div(class="modal-card-head :p-2 :border-b") {
                     p(class="modal-card-title") { "搜索结果" }
-                    button(class="delete", aria-label="close", on:click=close)
+                    button(class="icon-3x icon-close", on:click=close)
                 }
-                div(class="modal-card-body markdown-body") {
-                    h2 { "搜索结果" }
+                div(class="modal-card-body :p-4 markdown-body") {
                     ul {
                         Indexed {
                             iterable: search_result,
                             view: move |ctx, it| view! {ctx,
-                                li(class="box") {
+                                li {
                                     a(href=format!("/#/{}",it.path), on:click=close) {
                                         (it.line)
                                     }
@@ -208,27 +212,27 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     });
 
     view! {ctx,
-        header(class="mb-4") {
-            div(class="container") {
-                div(class="columns is-align-content-space-between is-align-items-center") {
-                    div(class="column m-0 title") {
+        header(class="lg:mb-4 :mb-0") {
+            div(class="container :p-2") {
+                div(class="columns :justify-center :items-center") {
+                    div(class="column :m-0 title") {
                         a(href=root) {
                             (title)
                         }
                     }
-                    div(class="column m-0 quick-links")
+                    div(class="column :m-0 quick-links")
                 }
             }
         }
-        section(class="mb-4") {
+        section(class=":mb-4") {
             div(class="container") {
                 div(class="columns") {
-                    article(class="column is-3-4 box post") {
+                    article(class="column post is-3-4 :shadow lg:rounded :bg-white :px-4 :py-6") {
                         Post(_main_md)
                     }
-                    aside(class="column aside") {
-                        div(class="content-wrapper") {
-                            div(class="mb-4") {
+                    aside(class="column aside :shadow lg:shadow-none") {
+                        div(class="content-wrapper :p-4") {
+                            div(class=":mb-4") {
                                 SearchDialog()
                             }
                             div {
@@ -239,8 +243,8 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
                 }
             }
         }
-        footer(class="mb-4") {
-            div(class="container pl-2 pr-2") {
+        footer(class=":mb-4 :pb-12") {
+            div(class="container :px-4") {
                 div(dangerously_set_inner_html=&footer_message)
             }
         }
