@@ -10,7 +10,7 @@ use crate::util::{highlight_all, load_md_contents, render_markdown, render_one_m
 
 #[component]
 pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
-    let modal_default_classes = "search-result-dialog modal :backdrop-blur-sm lg:bg-slate-700";
+    let modal_default_classes = "search-result-dialog modal lg:bg-slate-700 lg:bg-opacity-10";
 
     let keyword = ctx.create_signal(String::new());
     let search_result = ctx.create_signal(vec![]);
@@ -52,16 +52,16 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
             input(bind:value=keyword,
                 on:keypress=search,
                 placeholder="搜索 ...",
-                class=":shadow :rounded :px-2 :py-1 :border-none :w-full",
+                class="shadow rounded px-2 py-1 border-none w-full",
                 type="search")
         }
         div(class=dialog_classes) {
-            div(class="modal-card :bg-white lg:rounded-md lg:shadow-md lg:border") {
-                div(class="modal-card-head :p-2 :border-b") {
+            div(class="modal-card bg-white lg:rounded-md lg:shadow-md") {
+                div(class="modal-card-head p-2 border-0 border-b") {
                     p(class="modal-card-title") { "搜索结果" }
                     button(class="icon-3x icon-close", on:click=close)
                 }
-                div(class="modal-card-body :p-4 markdown-body") {
+                div(class="modal-card-body p-4 markdown-body") {
                     ul {
                         Indexed {
                             iterable: search_result,
@@ -83,7 +83,8 @@ pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
 #[component]
 pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
     let div_ref = ctx.create_node_ref();
-    let wrapper_classes = create_rc_signal(String::from("back-top-wrapper hidden"));
+    let default_classes = "back-top-wrapper rounded border p-1";
+    let wrapper_classes = create_rc_signal(format!("{} hidden", default_classes));
 
     {
         let on_scroll: Box<dyn Fn()> = Box::new({
@@ -93,9 +94,9 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
                 log::debug!("on_scroll: {}", scroll_top);
 
                 if scroll_top > 300 {
-                    wrapper_classes.set(String::from("back-top-wrapper show"));
+                    wrapper_classes.set(format!("{} show", default_classes));
                 } else {
-                    wrapper_classes.set(String::from("back-top-wrapper hidden"));
+                    wrapper_classes.set(format!("{} hidden", default_classes));
                 }
             }
         });
@@ -212,27 +213,27 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     });
 
     view! {ctx,
-        header(class="lg:mb-4 :mb-0") {
-            div(class="container :p-2") {
-                div(class="columns :justify-center :items-center") {
-                    div(class="column :m-0 title") {
+        header(class="lg:mb-4 mb-0") {
+            div(class="container p-2") {
+                div(class="columns justify-center items-center") {
+                    div(class="column m-0 title") {
                         a(href=root) {
                             (title)
                         }
                     }
-                    div(class="column :m-0 quick-links")
+                    div(class="column m-0 quick-links")
                 }
             }
         }
-        section(class=":mb-4") {
+        section(class="mb-4") {
             div(class="container") {
                 div(class="columns") {
-                    article(class="column post is-3-4 :shadow lg:rounded :bg-white :p-8") {
+                    article(class="column post is-3-4 shadow lg:rounded bg-white p-8") {
                         Post(_main_md)
                     }
-                    aside(class="column aside :shadow lg:shadow-none") {
-                        div(class="content-wrapper :p-4") {
-                            div(class=":mb-4") {
+                    aside(class="column aside shadow lg:shadow-none") {
+                        div(class="content-wrapper p-4") {
+                            div(class="mb-4") {
                                 SearchDialog()
                             }
                             div {
@@ -243,8 +244,8 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
                 }
             }
         }
-        footer(class=":mb-4 :pb-12") {
-            div(class="container :px-4") {
+        footer(class="mb-4 pb-12") {
+            div(class="container px-4") {
                 div(dangerously_set_inner_html=&footer_message)
             }
         }

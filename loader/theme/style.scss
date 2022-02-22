@@ -25,6 +25,10 @@ input[type='search'] {
 
 button {
   cursor: pointer;
+  background-color: unset;
+  appearance: none;
+  outline: none;
+  border: 0;
 }
 
 .icon-3x {
@@ -83,11 +87,8 @@ footer {
   position: fixed;
   right: 1.5rem;
   bottom: 1.5rem;
-  padding: 4px;
 
   background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 2px;
-  box-shadow: var(--shadow);
   transition: all 0.2s ease-in-out;
   color: var(--color-white);
   cursor: pointer;

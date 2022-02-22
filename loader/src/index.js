@@ -1,3 +1,6 @@
+import initUnocssRuntime from '@unocss/runtime';
+import preset from '@unocss/preset-mini';
+
 import init, { main, Config } from '../../core/pkg';
 import './style.css';
 
@@ -11,4 +14,8 @@ import './style.css';
     .set_title(title || 'docutil');
 
   main(config);
+
+  initUnocssRuntime({
+    defaults: { presets: [preset()] },
+  });
 })();

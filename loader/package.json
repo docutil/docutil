@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild --outfile=dist/index.mjs --platform=browser --target=chrome83 src/index.js --format=esm --bundle --minify --loader:.svg=dataurl",
+    "build": "esbuild --outfile=dist/index.mjs --target=chrome91 --format=esm --bundle --minify --loader:.svg=dataurl src/index.js",
     "install-wasm": "cp ../core/pkg/*.wasm dist/",
     "serve": "sirv --dev ."
   },
@@ -47,6 +47,8 @@
     "sirv-cli": "^2.0.2"
   },
   "dependencies": {
+    "@unocss/preset-mini": "^0.26.2",
+    "@unocss/runtime": "^0.26.2",
     "github-markdown-css": "^5.1.0",
     "minireset.css": "^0.0.7"
   }
