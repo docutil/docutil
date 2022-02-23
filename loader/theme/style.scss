@@ -1,14 +1,13 @@
 @import '../node_modules/minireset.css/minireset.css';
 @import '../node_modules/github-markdown-css/github-markdown-light.css';
 @import 'github-markdown-light-patch';
-@import 'utils';
 
 :root {
   --color-gray: #adb5bd;
   --color-white: #fff;
   --header-bg: #3b6837;
+  --header-fc: #fff;
   --main-bg: #f9f7ec;
-  --shadow: 0 2px 3px hsla(51, 50%, 44%, 0.35);
 }
 
 html,
@@ -34,6 +33,9 @@ button {
 .icon-3x {
   width: 1.5rem;
   height: 1.5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .icon-top {
@@ -48,12 +50,26 @@ button {
   background-size: contain;
 }
 
+.container {
+  width: 100%;
+  margin: 0;
+}
+
+.columns {
+  display: block;
+
+  .column {
+    display: block;
+    width: 100%;
+  }
+}
+
 header {
   background-color: var(--header-bg);
   font-size: 1.5rem;
 
   & a:any-link {
-    color: var(--color-white);
+    color: var(--header-fc);
     text-decoration: none;
   }
 }
@@ -145,6 +161,11 @@ footer {
 }
 
 @media screen and (min-width: 992px) {
+  .container {
+    width: 960px;
+    margin: 0 auto;
+  }
+
   .search-result-dialog {
     position: fixed;
     top: 0;
@@ -155,30 +176,30 @@ footer {
     align-items: center;
     overflow: hidden;
     z-index: 999;
-  
+
     &.hidden {
       display: none;
     }
-  
+
     &.show {
       display: flex;
     }
-  
+
     .modal-card {
       flex: initial;
       width: 600px;
     }
-  
+
     .modal-card-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-  
+
     .modal-card-body {
       max-height: 500px;
       overflow-y: auto;
-  
+
       ul {
         li {
           word-break: break-all;
@@ -192,10 +213,15 @@ footer {
 
     .column {
       flex: 1;
+
+      &.is-3-4 {
+        flex: initial;
+        width: calc(3 / 4 * 100%);
+      }
     }
 
     .column + .column {
-      margin-left: 0.5rem;
+      margin-left: 1rem;
     }
   }
 
@@ -229,5 +255,22 @@ footer {
 
   .aside {
     display: none;
+  }
+
+  .columns {
+    display: block;
+
+    .column {
+      flex: unset;
+
+      &.is-3-4 {
+        flex: unset;
+        width: 100%;
+      }
+    }
+
+    .column + .column {
+      margin-left: unset;
+    }
   }
 }
