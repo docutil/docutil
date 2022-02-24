@@ -1,84 +1,11 @@
 use gloo::utils::{document, document_element, window};
 use sycamore::{futures::ScopeSpawnFuture, prelude::*};
 use wasm_bindgen::{prelude::*, JsCast};
-use web_sys::{Event, KeyboardEvent};
 
 use crate::config::Config;
 use crate::router::Router;
 use crate::search::*;
 use crate::util::{highlight_all, load_md_contents, render_markdown, render_one_markdown};
-
-#[component]
-pub fn SearchDialog<G: Html>(ctx: ScopeRef) -> View<G> {
-    let modal_default_classes = "search-result-dialog modal lg:bg-slate-700 lg:bg-opacity-10";
-
-    let keyword = ctx.create_signal(String::new());
-    let search_result = ctx.create_signal(vec![]);
-    let dialog_classes = ctx.create_signal(format!("{} {}", modal_default_classes, "hidden"));
-
-    let search = {
-        move |event: Event| {
-            let text = (*keyword.get()).clone();
-            if text.is_empty() {
-                return;
-            }
-
-            let event = event.dyn_into::<KeyboardEvent>().unwrap();
-            if event.key_code() == 13 {
-                let search_result = search_result.clone();
-                ctx.spawn_future(async move {
-                    let result = remote_search(&text, 1, 100).await.unwrap();
-                    log::info!("remote_search result is: {:?}", result);
-                    search_result.set(result);
-                    dialog_classes.set(format!("{} {}", modal_default_classes, "show"))
-                });
-            }
-        }
-    };
-
-    let close = {
-        let dialog_classes = dialog_classes.clone();
-        let search_result = search_result.clone();
-        let keyword = keyword.clone();
-        move |_: Event| {
-            dialog_classes.set(format!("{} {}", modal_default_classes, "hidden"));
-            search_result.set(vec![]);
-            keyword.set(String::new())
-        }
-    };
-
-    view! {ctx,
-        div(class="search-box") {
-            input(bind:value=keyword,
-                on:keypress=search,
-                placeholder="搜索 ...",
-                class="shadow rounded px-2 py-1 border-none w-full",
-                type="search")
-        }
-        div(class=dialog_classes) {
-            div(class="modal-card bg-white lg:rounded-md lg:shadow-md") {
-                div(class="modal-card-head p-2 border-0 border-b") {
-                    p(class="modal-card-title") { "搜索结果" }
-                    button(class="icon-3x icon-close", on:click=close)
-                }
-                div(class="modal-card-body p-4 markdown-body") {
-                    ul {
-                        Indexed {
-                            iterable: search_result,
-                            view: move |ctx, it| view! {ctx,
-                                li {
-                                    a(href=format!("/#/{}",it.path), on:click=close) {
-                                        (it.line)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 #[component]
 pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
@@ -118,7 +45,7 @@ pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
     view! {ctx,
         div(class=(*wrapper_classes.get()).clone(), title="回到顶部") {
             div(ref=div_ref, on:click=move |_| {scroll_top()}) {
-                span(class="icon icon-top")
+                span(class="icon-3x icon-top")
             }
         }
     }
@@ -234,7 +161,7 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
                     aside(class="column aside shadow lg:shadow-none") {
                         div(class="content-wrapper p-4") {
                             div(class="mb-4") {
-                                SearchDialog()
+                                SearchBox()
                             }
                             div {
                                 Post(_sidebar_md)

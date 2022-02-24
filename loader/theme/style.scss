@@ -16,6 +16,10 @@ body {
   z-index: 0;
 }
 
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
 input[type='search'] {
   outline: none;
   appearance: none;
@@ -119,6 +123,7 @@ footer {
 }
 
 .search-result-dialog {
+  display: block;
   position: fixed;
   top: 0;
   right: 0;
@@ -129,13 +134,8 @@ footer {
   overflow: hidden;
   z-index: 999;
 
-  &.hidden {
-    display: none;
-  }
-
-  &.show {
-    display: block;
-  }
+  transition: opacity 0.2s;
+  background: rgba(0, 0, 0, 0.16);
 
   .modal-card {
     flex: initial;
@@ -168,6 +168,7 @@ footer {
 
   .search-result-dialog {
     position: fixed;
+    display: flex;
     top: 0;
     right: 0;
     left: 0;
@@ -176,14 +177,6 @@ footer {
     align-items: center;
     overflow: hidden;
     z-index: 999;
-
-    &.hidden {
-      display: none;
-    }
-
-    &.show {
-      display: flex;
-    }
 
     .modal-card {
       flex: initial;
