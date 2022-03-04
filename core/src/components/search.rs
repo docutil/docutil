@@ -27,7 +27,7 @@ pub async fn remote_search(
     keyword: &str,
     page_index: u32,
     page_size: u32,
-) -> anyhow::Result<Vec<Hit>> {
+) -> Result<Vec<Hit>, Box<dyn std::error::Error>> {
     let base_url = "https://mn-search.lambdadriver.space/api/v1/yuekcc/search";
     // TODO uri encode 处理
     let url = format!("{base_url}?keyword={keyword}&pageIndex={page_index}&pageSize={page_size}");

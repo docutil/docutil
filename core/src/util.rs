@@ -8,7 +8,7 @@ extern "C" {
     pub fn highlight_all();
 }
 
-pub async fn load_md_contents(url: &str) -> anyhow::Result<String> {
+pub async fn load_md_contents(url: &str) -> Result<String, Box<dyn std::error::Error>> {
     let resp = Request::get(url).send().await?;
     let text = resp.text().await?;
     Ok(text)

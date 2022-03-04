@@ -10,7 +10,6 @@ repository = "https://github.com/yuekcc/marknote-next"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-anyhow = "1.0.52"
 console_error_panic_hook = "0.1.7"
 console_log = "0.2.0"
 log = "0.4.14"

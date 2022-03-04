@@ -19,7 +19,7 @@ impl Router {
         }
     }
 
-    pub fn route(&self) -> anyhow::Result<(String, SearchParams)> {
+    pub fn route(&self) -> Result<(String, SearchParams), Box<dyn std::error::Error>> {
         let location = self.hash_history.location();
         let path = location.path();
         let search_params = location.query::<SearchParams>()?;
