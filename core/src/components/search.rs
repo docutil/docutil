@@ -3,7 +3,7 @@ use std::{rc::Rc, vec};
 use gloo::utils::document;
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
-use sycamore::{futures::ScopeSpawnFuture, prelude::*};
+use sycamore::{futures::ScopeSpawnLocal, prelude::*};
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::{Event, KeyboardEvent, RequestMode};
 
@@ -148,7 +148,7 @@ pub fn SearchBox<G: Html>(ctx: ScopeRef<'_>) -> View<G> {
 
             let event = event.dyn_into::<KeyboardEvent>().unwrap();
             if event.key_code() == 13 {
-                ctx.spawn_future(async move {
+                ctx.spawn_local(async move {
                     let result = remote_search(&text, 1, 100).await.unwrap();
                     open_dialog(result);
                     reset();

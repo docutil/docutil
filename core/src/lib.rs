@@ -1,5 +1,5 @@
 use gloo::utils::{document_element, window};
-use sycamore::futures::ScopeSpawnFuture;
+use sycamore::futures::ScopeSpawnLocal;
 use sycamore::prelude::*;
 use wasm_bindgen::{prelude::*, JsCast};
 
@@ -72,7 +72,7 @@ pub fn App<G: Html>(ctx: ScopeRef, props: &Config) -> View<G> {
     ctx.create_effect(|| {
         _main_md.track();
 
-        ctx.spawn_future(async {
+        ctx.spawn_local(async {
             document_element().set_scroll_top(0);
         });
     });
