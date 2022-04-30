@@ -1,8 +1,8 @@
 # docutil
 
-<div style="text-align: center; margin: 20px">
-    <p><img src="./docutil-logo.png" width="128"></p>
-    <p>docutil 是一个纯前端的网站应用，由 rust、javascritp 共同驱动</p>
+<div>
+    <p align="center"><img src="./docutil-logo.png" width="128"></p>
+    <p align="center">docutil 是一个纯前端的网站应用，由 rust、javascritp 共同驱动</p>
 </div>
 
 
