@@ -7,7 +7,7 @@ description = "a pure-frontend site app powered by rust with wasm"
 repository = "https://github.com/yuekcc/docutil"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
 
 [package.metadata.wasm-pack.profile.dev]
 wasm-opt = false

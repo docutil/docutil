@@ -20,4 +20,16 @@ build-core:
 build-core-debug:
     cd core && wasm-pack build --dev --out-dir pkg --target web
 
+make-example-site-package:
+    #!/bin/sh
+    test -d mysite && rm -rf mysite
+    mkdir -p mysite
+    cp -r loader/dist mysite
+    cp loader/index.html mysite
+    cp loader/README.md mysite
+    cp loader/SIDEBAR.md mysite
+    cp -r loader/docs mysite
+    tar -czvf docutil-example-site.tar.gz mysite
+
+make-package: make-example-site-package
 
