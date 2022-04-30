@@ -1,6 +1,7 @@
 use std::{rc::Rc, vec};
 
 use gloo::utils::document;
+use log::{debug, trace, warn};
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
 use sycamore::{futures::spawn_local, prelude::*};
@@ -128,51 +129,47 @@ fn open_dialog<'a>(search_result: Vec<Hit>) {
     document().body().unwrap().append_child(&el).unwrap_throw();
 }
 
-fn make_searcher(keyword: RcSignal<String>) -> Box<dyn Fn(Event) -> ()> {
-    Box::new(move |event| {
-        let reset = {
-            let keyword = keyword.clone();
-            move || {
-                keyword.set(String::new());
-            }
-        };
-
-        let text = (*keyword.get()).clone();
-        if text.is_empty() {
-            return;
-        }
-
-        let event = event.dyn_into::<KeyboardEvent>().unwrap();
-        if event.key_code() == 13 {
-            spawn_local(async move {
-                let result = remote_search(&text, 1, 100).await.unwrap();
-                open_dialog(result);
-                reset();
-                set_overflow(true);
-            });
-        }
-    })
-}
-
 #[component]
-pub fn SearchBox<'a, G: Html>(ctx: Scope<'a>) -> View<G> {
-    let keyword = create_rc_signal(String::new());
-    let _keyword = create_signal(ctx, String::new());
+pub fn SearchBox<G: Html>(ctx: Scope) -> View<G> {
+    let keyword = create_signal(ctx, String::new());
 
-    let search = {
-        let keyword = keyword.clone();
-        make_searcher(keyword)
+    let start_search = {
+        move |event: Event| {
+            let event = event.dyn_into::<KeyboardEvent>().unwrap();
+            if event.key_code() != 13 {
+                return;
+            }
+
+            let word = (*keyword.get()).clone();
+            if word.is_empty() {
+                return;
+            }
+
+            spawn_local(async move {
+                trace!("searching, call remote_search");
+
+                let res = remote_search(&word, 1, 100).await;
+                match res {
+                    Ok(result) => {
+                        trace!("searching, get data");
+
+                        open_dialog(result);
+                        set_overflow(true);
+                    }
+                    Err(err) => {
+                        warn!("unable to search, {}", err)
+                    }
+                }
+            });
+
+            keyword.set(String::new());
+        }
     };
-
-    create_effect(ctx, move || {
-        let updated = (*keyword.get()).clone();
-        _keyword.set(updated);
-    });
 
     view! {ctx,
          div(class="search-box") {
-            input(bind:value=_keyword,
-                on:keypress=search,
+            input(bind:value=keyword,
+                on:keypress=start_search,
                 placeholder="搜索 ...",
                 class="shadow rounded px-2 py-1 border-none w-full",
                 type="search")
