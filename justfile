@@ -36,5 +36,5 @@ make-dist-package:
     cd loader
     tar -czvf ../docutil-dist.tar.gz dist
 
-make-package: make-example-site-package
+make-package: make-example-site-package make-dist-package
 
