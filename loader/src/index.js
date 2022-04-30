@@ -1,7 +1,7 @@
-import initUnocssRuntime from '@unocss/runtime';
+import initUnocss from '@unocss/runtime';
 import preset from '@unocss/preset-mini';
 
-import init, { main, Config } from '../../core/pkg';
+import init, { initApp, Config } from '../../core/pkg';
 import './style.css';
 
 !(async () => {
@@ -9,13 +9,13 @@ import './style.css';
 
   const { title, root, footer } = window.config || {};
   const config = new Config()
-    .set_footer_message(footer || '')
-    .set_root_path(root || '/')
-    .set_title(title || 'docutil');
+    .setFooterMessage(footer || '')
+    .setRootPath(root || '/')
+    .setTitle(title || 'docutil');
 
-  main(config);
+  initApp(config);
 
-  initUnocssRuntime({
+  initUnocss({
     defaults: { presets: [preset()] },
   });
 })();

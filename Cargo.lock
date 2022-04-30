@@ -79,6 +79,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "docutil_core"
+version = "0.3.0"
+dependencies = [
+ "console_error_panic_hook",
+ "console_log",
+ "gloo",
+ "log",
+ "pulldown-cmark",
+ "serde",
+ "serde_urlencoded",
+ "sycamore",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "wee_alloc",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -776,24 +794,6 @@ name = "wasm-bindgen-shared"
 version = "0.2.80"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d554b7f530dee5964d9a9468d95c1f8b8acae4f282807e7d27d4b03099a46744"
-
-[[package]]
-name = "web"
-version = "0.2.0"
-dependencies = [
- "console_error_panic_hook",
- "console_log",
- "gloo",
- "log",
- "pulldown-cmark",
- "serde",
- "serde_urlencoded",
- "sycamore",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "wee_alloc",
-]
 
 [[package]]
 name = "web-sys"

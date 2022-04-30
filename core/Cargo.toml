@@ -1,6 +1,6 @@
 [package]
-name = "web"
-version = "0.2.0"
+name = "docutil_core"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 description = "a pure-frontend site app powered by rust with wasm"

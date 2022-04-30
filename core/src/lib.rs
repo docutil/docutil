@@ -8,10 +8,7 @@ mod components;
 mod config;
 mod router;
 mod util;
-use crate::components::*;
-use crate::config::Config;
-use crate::router::Router;
-use crate::util::render_one_markdown;
+use crate::{components::*, config::Config, router::Router, util::render_one_markdown};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -119,10 +116,15 @@ pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
     }
 }
 
-#[wasm_bindgen]
-pub fn main(config: &Config) {
+#[wasm_bindgen(js_name = initApp)]
+pub fn init_app(config: &Config) {
     console_error_panic_hook::set_once();
+
+    #[cfg(not(debug_assertions))]
     console_log::init_with_level(log::Level::Info).unwrap();
+
+    #[cfg(debug_assertions)]
+    console_log::init_with_level(log::Level::Trace).unwrap();
 
     sycamore::render(|ctx| {
         view! {ctx,

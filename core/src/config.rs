@@ -20,28 +20,35 @@ impl Config {
         }
     }
 
+    #[wasm_bindgen(js_name = setFooterMessage)]
     pub fn set_footer_message(mut self, message: String) -> Self {
         self.footer_message = message;
         self
     }
 
+    #[wasm_bindgen(js_name = getFooterMessage)]
     pub fn get_footer_message(&self) -> String {
         self.footer_message.clone()
     }
 
+    #[wasm_bindgen(js_name = setTitle)]
     pub fn set_title(mut self, title: String) -> Self {
         self.title = title;
         self
     }
+
+    #[wasm_bindgen(js_name = getTitle)]
     pub fn get_title(&self) -> String {
         self.title.clone()
     }
 
+    #[wasm_bindgen(js_name = setRootPath)]
     pub fn set_root_path(mut self, root_path: String) -> Self {
         self.root_path = root_path;
         self
     }
 
+    #[wasm_bindgen(js_name = getRootPath)]
     pub fn get_root_path(&self) -> String {
         self.root_path.clone()
     }
