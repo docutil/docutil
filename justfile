@@ -31,5 +31,10 @@ make-example-site-package:
     cp -r loader/docs mysite
     tar -czvf docutil-example-site.tar.gz mysite
 
+make-dist-package:
+    #!/bin/sh
+    cd loader
+    tar -czvf ../docutil-dist.tar.gz dist
+
 make-package: make-example-site-package
 
