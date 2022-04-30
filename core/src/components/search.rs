@@ -20,8 +20,8 @@ impl Display for SearchApiQueryParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let pairs = vec![
             ("keyword", self.keyword.clone()),
-            ("page_index", self.page_index.to_string()),
-            ("page_size", self.page_size.to_string()),
+            ("pageIndex", self.page_index.to_string()),
+            ("pageSize", self.page_size.to_string()),
         ];
         write!(f, "{}", serde_urlencoded::to_string(pairs).unwrap())
     }
