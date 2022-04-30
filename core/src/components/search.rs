@@ -81,6 +81,7 @@ fn set_overflow(hidden: bool) {
 
 #[derive(Prop, Clone)]
 pub struct SearchResultDialogProps {
+    pub keyword: String,
     pub list: Vec<Hit>,
     pub on_close: Rc<Box<dyn Fn()>>,
 }
@@ -95,8 +96,10 @@ fn SearchResultDialog<'a, G: Html>(ctx: Scope<'a>, props: SearchResultDialogProp
     view! {ctx,
         div(class="search-result-dialog modal lg:bg-slate-700 lg:bg-opacity-10") {
             div(class="modal-card bg-white lg:rounded-md lg:shadow-md") {
-                div(class="modal-card-head p-2 border-0 border-b") {
-                    p(class="modal-card-title") { "搜索结果" }
+                div(class="modal-card-head p-2 border-0 border-b border-gray-300") {
+                    p(class="modal-card-title") {
+                        (format!("搜索：{}", props.keyword.clone()))
+                    }
                     button(class="icon-3x icon-close", on:click=move |e| btn_on_click(e))
                 }
                 div(class="modal-card-body p-4 markdown-body") {
@@ -124,7 +127,7 @@ fn SearchResultDialog<'a, G: Html>(ctx: Scope<'a>, props: SearchResultDialogProp
     }
 }
 
-fn open_dialog<'a>(search_result: Vec<Hit>) {
+fn open_dialog<'a>(search_result: Vec<Hit>, keyword: &str) {
     let el = document().create_element("div").unwrap_throw();
     let on_close = {
         let el = el.clone();
@@ -136,6 +139,7 @@ fn open_dialog<'a>(search_result: Vec<Hit>) {
 
     {
         let props = SearchResultDialogProps {
+            keyword: keyword.into(),
             list: search_result,
             on_close: Rc::new(Box::new(on_close)),
         };
@@ -175,7 +179,7 @@ pub fn SearchBox<G: Html>(ctx: Scope) -> View<G> {
                 let res = remote_search(&word, 1, 100).await;
                 match res {
                     Ok(result) => {
-                        open_dialog(result);
+                        open_dialog(result, &word);
                         set_overflow(true);
                     }
                     Err(err) => {
