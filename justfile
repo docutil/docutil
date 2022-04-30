@@ -18,6 +18,6 @@ build-core:
     cd core && wasm-pack build --release --out-dir pkg --target web
 
 build-core-debug:
-    cd core && wasm-pack build --out-dir pkg --target web
+    cd core && wasm-pack build --debug --out-dir pkg --target web
 
 

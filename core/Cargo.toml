@@ -3,8 +3,8 @@ name = "web"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "a pure-frontend site kit"
-repository = "https://github.com/yuekcc/marknote-next"
+description = "a pure-frontend site app powered by rust with wasm"
+repository = "https://github.com/yuekcc/docutil"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
