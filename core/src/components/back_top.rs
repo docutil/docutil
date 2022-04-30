@@ -1,4 +1,5 @@
 use gloo::utils::{document, document_element};
+use log::debug;
 use sycamore::prelude::*;
 use wasm_bindgen::{prelude::*, JsCast};
 
@@ -13,7 +14,7 @@ pub fn BackTop<G: Html>(ctx: Scope) -> View<G> {
             let wrapper_classes = wrapper_classes.clone();
             move || {
                 let scroll_top = document_element().scroll_top();
-                log::debug!("on_scroll: {}", scroll_top);
+                debug!("on_scroll: {}", scroll_top);
 
                 if scroll_top > 300 {
                     wrapper_classes.set(format!("{} show", default_classes));
@@ -32,7 +33,7 @@ pub fn BackTop<G: Html>(ctx: Scope) -> View<G> {
 
     let scroll_top = {
         move || {
-            log::debug!("scroll_top");
+            debug!("scroll_top");
             document_element().set_scroll_top(0);
         }
     };

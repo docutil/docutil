@@ -1,4 +1,5 @@
 use gloo::utils::{document_element, window};
+use log::debug;
 use sycamore::futures::spawn_local;
 use sycamore::prelude::*;
 use wasm_bindgen::{prelude::*, JsCast};
@@ -44,8 +45,8 @@ pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
             let home_page = format!("{}{}", root, "README.md").replace("//", "/");
             let path = format!("{}{}", root, path).replace("//", "/");
 
-            log::debug!("home_page = {}", home_page);
-            log::debug!("path = {}", path);
+            debug!("home_page = {}", home_page);
+            debug!("path = {}", path);
 
             let path = if path == root.as_str() {
                 home_page

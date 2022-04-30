@@ -1,12 +1,31 @@
-use std::{rc::Rc, vec};
+use std::{fmt::Display, rc::Rc, vec};
 
-use gloo::utils::document;
-use log::{debug, trace, warn};
-use reqwasm::http::Request;
+use gloo::{net::http::Request, utils::document};
+use log::warn;
 use serde::{Deserialize, Serialize};
 use sycamore::{futures::spawn_local, prelude::*};
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::{Event, KeyboardEvent, RequestMode};
+
+static SEARCH_API_ENDPOINT: &str = "https://mn-search.lambdadriver.space/api/v1/yuekcc/search";
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SearchApiQueryParam {
+    pub keyword: String,
+    pub page_index: u32,
+    pub page_size: u32,
+}
+
+impl Display for SearchApiQueryParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let pairs = vec![
+            ("keyword", self.keyword.clone()),
+            ("page_index", self.page_index.to_string()),
+            ("page_size", self.page_size.to_string()),
+        ];
+        write!(f, "{}", serde_urlencoded::to_string(pairs).unwrap())
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Hit {
@@ -14,7 +33,7 @@ pub struct Hit {
     pub path: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SearchResult {
     pub hits: Vec<Hit>,
     pub limit: u32,
@@ -29,11 +48,18 @@ pub async fn remote_search(
     page_index: u32,
     page_size: u32,
 ) -> Result<Vec<Hit>, Box<dyn std::error::Error>> {
-    let base_url = "https://mn-search.lambdadriver.space/api/v1/yuekcc/search";
-    // TODO uri encode 处理
-    let url = format!("{base_url}?keyword={keyword}&pageIndex={page_index}&pageSize={page_size}");
+    let query_params = SearchApiQueryParam {
+        keyword: keyword.into(),
+        page_index,
+        page_size,
+    };
 
-    let req = Request::new(&url).mode(RequestMode::Cors).send().await?;
+    let endpoint = format!("{SEARCH_API_ENDPOINT}?{query_params}");
+    let req = Request::new(&endpoint)
+        .mode(RequestMode::Cors)
+        .send()
+        .await?;
+
     let result = req.json::<SearchResult>().await;
     if result.is_ok() {
         Ok(result.unwrap().hits)
@@ -146,13 +172,9 @@ pub fn SearchBox<G: Html>(ctx: Scope) -> View<G> {
             }
 
             spawn_local(async move {
-                trace!("searching, call remote_search");
-
                 let res = remote_search(&word, 1, 100).await;
                 match res {
                     Ok(result) => {
-                        trace!("searching, get data");
-
                         open_dialog(result);
                         set_overflow(true);
                     }

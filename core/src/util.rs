@@ -1,5 +1,5 @@
 use pulldown_cmark::{html, CowStr, Event, HeadingLevel, Options, Parser, Tag};
-use reqwasm::http::Request;
+use gloo::net::http::Request;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
