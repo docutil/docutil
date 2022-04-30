@@ -3,7 +3,7 @@ use std::{rc::Rc, vec};
 use gloo::utils::document;
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
-use sycamore::{futures::ScopeSpawnLocal, prelude::*};
+use sycamore::{futures::spawn_local, prelude::*};
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::{Event, KeyboardEvent, RequestMode};
 
@@ -59,9 +59,9 @@ pub struct SearchResultDialogProps {
 }
 
 #[component]
-fn SearchResultDialog<'a, G: Html>(ctx: ScopeRef<'a>, props: SearchResultDialogProps) -> View<G> {
+fn SearchResultDialog<'a, G: Html>(ctx: Scope<'a>, props: SearchResultDialogProps) -> View<G> {
     let on_close = Rc::new(move |_: Event| (props.on_close)());
-    let search_result = ctx.create_memo(move || props.list.clone());
+    let search_result = create_memo(ctx, move || props.list.clone());
 
     let btn_on_click = on_close.clone();
 
@@ -116,7 +116,7 @@ fn open_dialog<'a>(search_result: Vec<Hit>) {
         sycamore::render_to(
             {
                 let props = props.clone();
-                move |ctx: &Scope| {
+                move |ctx: Scope| {
                     view! {ctx,
                         SearchResultDialog(props)
                     }
@@ -128,39 +128,50 @@ fn open_dialog<'a>(search_result: Vec<Hit>) {
     document().body().unwrap().append_child(&el).unwrap_throw();
 }
 
-#[component]
-pub fn SearchBox<G: Html>(ctx: ScopeRef<'_>) -> View<G> {
-    let keyword = ctx.create_signal(String::new());
+fn make_searcher(keyword: RcSignal<String>) -> Box<dyn Fn(Event) -> ()> {
+    Box::new(move |event| {
+        let reset = {
+            let keyword = keyword.clone();
+            move || {
+                keyword.set(String::new());
+            }
+        };
 
-    let reset = {
-        let keyword = keyword.clone();
-        move || {
-            keyword.set(String::new());
+        let text = (*keyword.get()).clone();
+        if text.is_empty() {
+            return;
         }
-    };
+
+        let event = event.dyn_into::<KeyboardEvent>().unwrap();
+        if event.key_code() == 13 {
+            spawn_local(async move {
+                let result = remote_search(&text, 1, 100).await.unwrap();
+                open_dialog(result);
+                reset();
+                set_overflow(true);
+            });
+        }
+    })
+}
+
+#[component]
+pub fn SearchBox<'a, G: Html>(ctx: Scope<'a>) -> View<G> {
+    let keyword = create_rc_signal(String::new());
+    let _keyword = create_signal(ctx, String::new());
 
     let search = {
-        move |event: Event| {
-            let text = (*keyword.get()).clone();
-            if text.is_empty() {
-                return;
-            }
-
-            let event = event.dyn_into::<KeyboardEvent>().unwrap();
-            if event.key_code() == 13 {
-                ctx.spawn_local(async move {
-                    let result = remote_search(&text, 1, 100).await.unwrap();
-                    open_dialog(result);
-                    reset();
-                    set_overflow(true);
-                });
-            }
-        }
+        let keyword = keyword.clone();
+        make_searcher(keyword)
     };
 
+    create_effect(ctx, move || {
+        let updated = (*keyword.get()).clone();
+        _keyword.set(updated);
+    });
+
     view! {ctx,
-        div(class="search-box") {
-            input(bind:value=keyword,
+         div(class="search-box") {
+            input(bind:value=_keyword,
                 on:keypress=search,
                 placeholder="搜索 ...",
                 class="shadow rounded px-2 py-1 border-none w-full",

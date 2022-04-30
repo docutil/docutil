@@ -3,8 +3,8 @@ use sycamore::prelude::*;
 use wasm_bindgen::{prelude::*, JsCast};
 
 #[component]
-pub fn BackTop<G: Html>(ctx: ScopeRef) -> View<G> {
-    let div_ref = ctx.create_node_ref();
+pub fn BackTop<G: Html>(ctx: Scope) -> View<G> {
+    let div_ref = create_node_ref(ctx);
     let default_classes = "back-top-wrapper rounded border p-1";
     let wrapper_classes = create_rc_signal(format!("{} hidden", default_classes));
 
