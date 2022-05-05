@@ -21,7 +21,7 @@ pub enum Task {
 }
 
 impl Task {
-    pub fn as_runnable(&self) -> Box<dyn Runnable> {
+    pub fn to_runnable(&self) -> Box<dyn Runnable> {
         match self {
             Self::Print(print_task) => Box::new(print_task.clone().to_owned()),
             Self::Command(command_task) => Box::new(command_task.clone().to_owned()),
@@ -52,7 +52,7 @@ impl PlayBook {
             info!("[PLAYBOOK] running plays: {}", plays.name.clone());
 
             plays.tasks.into_iter().for_each(|task| {
-                let runnable = task.as_runnable();
+                let runnable = task.to_runnable();
                 runnable.name();
                 runnable.run().unwrap()
             })
