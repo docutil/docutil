@@ -1,56 +1,15 @@
-use std::process;
-
-use tracing::info;
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
-pub trait Runnable {
-    fn name(&self);
-    fn run(&self) -> Result<(), Box<dyn std::error::Error>>;
-}
+mod builtin;
+mod runnable;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PrintTask {
-    pub name: String,
+use crate::{
+    builtin::{CommandTask, PrintTask},
+    runnable::Runnable,
+};
 
-    #[serde(rename(serialize = "print", deserialize = "print"))]
-    pub command_line: String,
-}
-
-impl Runnable for PrintTask {
-    fn name(&self) {
-        info!("[TASK] {}", self.name.clone());
-    }
-
-    fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        info!("{}", self.command_line.clone());
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CommandTask {
-    pub name: String,
-
-    #[serde(rename(serialize = "command", deserialize = "command"))]
-    pub command_line: String,
-}
-
-impl Runnable for CommandTask {
-    fn name(&self) {
-        info!("[TASK] {}", self.name.clone());
-    }
-
-    fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        let output = process::Command::new("sh")
-            .arg("-c")
-            .arg(&self.command_line)
-            .output()
-            .expect(&format!("unable to run command: {}", self.command_line));
-
-        info!("{}", std::str::from_utf8(&output.stdout)?);
-        Ok(())
-    }
-}
+pub use runnable::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -92,7 +51,7 @@ impl PlayBook {
         self.0.into_iter().for_each(|plays| {
             info!("[PLAYBOOK] running plays: {}", plays.name.clone());
 
-            plays.tasks.iter().for_each(|task| {
+            plays.tasks.into_iter().for_each(|task| {
                 let runnable = task.as_runnable();
                 runnable.name();
                 runnable.run().unwrap()
@@ -112,7 +71,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn try_read_a_playbook_file() {
+    fn try_read_playbook_file() {
         let doc = include_str!("../examples/demo.yml");
         let playbook = PlayBook::try_from(doc).unwrap();
 
@@ -122,30 +81,8 @@ mod tests {
     #[test]
     fn run_playbook() {
         let doc = include_str!("../examples/demo.yml");
-        let playbook = PlayBook::try_from(doc).unwrap();
+        let playbook = try_from(doc).unwrap();
 
         playbook.start().unwrap();
-    }
-
-    #[test]
-    fn test_command_task() {
-        let command_task = CommandTask {
-            name: "test".into(),
-            command_line: "echo hello, world".into(),
-        };
-
-        command_task.name();
-        command_task.run().unwrap();
-    }
-
-    #[test]
-    fn test_print_task() {
-        let print_task = PrintTask {
-            name: "test".into(),
-            command_line: "hello, world".into(),
-        };
-
-        print_task.name();
-        print_task.run().unwrap();
     }
 }
