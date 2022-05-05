@@ -1,0 +1,8 @@
+---
+- name: demo playbook
+  tasks:
+    - name: print a message
+      print: hello, world
+    - name: run a command
+      command: whoami
+    

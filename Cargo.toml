@@ -1,5 +1,5 @@
 [workspace]
-members = ["core"]
+members = ["core", "playbook", "playbook_cli"]
 
 [profile.release]
 panic = 'abort'

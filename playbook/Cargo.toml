@@ -1,0 +1,15 @@
+[package]
+name = "playbook"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "a pure-frontend site app powered by rust with wasm"
+repository = "https://github.com/yuekcc/docutil"
+
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "*"
+tracing = "0.1"
