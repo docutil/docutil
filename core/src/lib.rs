@@ -128,6 +128,8 @@ pub fn init_app(config: &Config) {
 
     sycamore::render(|ctx| {
         view! {ctx,
+            // 按文档说明，un-cloak 属性用于解决初始化 uno 前的空白问题。
+            // 文档：https://github.com/unocss/unocss/tree/main/packages/runtime
             div(un-cloak=true) {
                 App(config)
             }
