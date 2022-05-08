@@ -1,11 +1,15 @@
-import initUnocss from '@unocss/runtime';
+import initUno from '@unocss/runtime';
 import preset from '@unocss/preset-mini';
 
-import init, { initApp, Config } from '../../core/pkg';
+import initWasm, { initApp, Config } from '../../core/pkg';
 import './style.css';
 
+initUno({
+  defaults: { presets: [preset()] },
+});
+
 !(async () => {
-  await init();
+  await initWasm();
 
   const { title, root, footer } = window.config || {};
   const config = new Config()
@@ -14,8 +18,4 @@ import './style.css';
     .setTitle(title || 'docutil');
 
   initApp(config);
-
-  initUnocss({
-    defaults: { presets: [preset()] },
-  });
 })();

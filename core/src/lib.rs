@@ -128,7 +128,9 @@ pub fn init_app(config: &Config) {
 
     sycamore::render(|ctx| {
         view! {ctx,
-            App(config)
+            div(un-cloak=true) {
+                App(config)
+            }
         }
     });
 }
