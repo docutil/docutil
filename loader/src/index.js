@@ -11,11 +11,12 @@ initUno({
 !(async () => {
   await initWasm();
 
-  const { title, root, footer } = window.config || {};
+  const { title, root, footer, searchApiEndpoint } = window.config || {};
   const config = new Config()
     .setFooterMessage(footer || '')
     .setRootPath(root || '/')
-    .setTitle(title || 'docutil');
+    .setTitle(title || 'docutil')
+    .setSearchApiEndpoint(searchApiEndpoint || '');
 
   initApp(config);
 })();

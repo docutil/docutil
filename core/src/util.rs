@@ -1,5 +1,7 @@
-use pulldown_cmark::{html, CowStr, Event, HeadingLevel, Options, Parser, Tag};
+use std::sync::atomic::{AtomicU32, Ordering};
+
 use gloo::net::http::Request;
+use pulldown_cmark::{html, CowStr, Event, HeadingLevel, Options, Parser, Tag};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -19,17 +21,6 @@ fn is_abs_uri(uri: &str) -> bool {
     _uri.starts_with("https://") || _uri.starts_with("http://") || _uri.starts_with("//")
 }
 
-fn id_builder() -> impl FnMut() -> u64 {
-    let mut num: u64 = 0;
-
-    let add = move || {
-        num += 1;
-        num
-    };
-
-    add
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Outline {
     pub name: String,
@@ -44,10 +35,10 @@ pub struct MarkdownPage {
 }
 
 pub fn render_markdown(doc: &str) -> MarkdownPage {
-    let mut next_id = id_builder();
-
     let mut outlines: Vec<Outline> = vec![];
     let mut some_heading: Option<Outline> = None;
+
+    let id = AtomicU32::new(1);
 
     let parser = Parser::new_ext(doc, Options::all()).filter_map(|event| match event {
         // 处理 md 文件中的相对路径
@@ -74,11 +65,11 @@ pub fn render_markdown(doc: &str) -> MarkdownPage {
         Event::End(Tag::Heading(level, ..)) => {
             if level != HeadingLevel::H1 && some_heading.is_some() {
                 let outline = some_heading.take().unwrap();
-                let anchor = format!("{}_{}", outline.level, next_id());
+                let anchor = format!("{}_{}", outline.level, id.fetch_add(1, Ordering::Relaxed));
 
                 outlines.push(Outline {
                     anchor: anchor.clone(),
-                    level: outline.level.clone(),
+                    level: outline.level,
                     name: outline.name.clone(),
                 });
 

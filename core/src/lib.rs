@@ -1,3 +1,4 @@
+use config::APP_OPTIONS;
 use gloo::utils::{document_element, window};
 use log::debug;
 use sycamore::futures::spawn_local;
@@ -24,10 +25,13 @@ fn on_popstate(f: Box<dyn FnMut()>) {
 }
 
 #[component]
-pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
-    let root = props.get_root_path();
-    let title = props.get_title();
-    let footer_message = render_one_markdown(&props.get_footer_message());
+pub fn App<G: Html>(ctx: Scope) -> View<G> {
+    let app_options = APP_OPTIONS.get().unwrap();
+
+    let root = app_options.get_root_path();
+    let title = app_options.get_title();
+    let footer_message = render_one_markdown(&app_options.get_footer_message());
+    let enable_search = app_options.is_enable_search();
 
     let main_md = create_rc_signal(String::new());
     let sidebar_md = create_rc_signal(format!("{}{}", root, "SIDEBAR.md"));
@@ -36,7 +40,7 @@ pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
         let router = Router::new();
 
         let main_md = main_md.clone();
-        let root = props.get_root_path();
+        let root = app_options.get_root_path();
         let update_route = Box::new(move || {
             let (path, _) = router.route().unwrap_throw();
             let home_page = format!("{}{}", root, "README.md").replace("//", "/");
@@ -45,11 +49,7 @@ pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
             debug!("home_page = {}", home_page);
             debug!("path = {}", path);
 
-            let path = if path == root.as_str() {
-                home_page
-            } else {
-                path
-            };
+            let path = if path == root.as_str() { home_page } else { path };
             main_md.set(path);
         });
 
@@ -96,9 +96,14 @@ pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
                     }
                     aside(class="column aside shadow lg:shadow-none") {
                         div(class="content-wrapper p-4") {
-                            div(class="mb-4") {
-                                SearchBox()
-                            }
+                            (if enable_search {
+                                view!(ctx, div(class="mb-4") {
+                                    SearchBox()
+                                })
+                            } else {
+                                view!(ctx, )
+                            })
+
                             div {
                                 Post(_sidebar_md)
                             }
@@ -117,7 +122,7 @@ pub fn App<G: Html>(ctx: Scope, props: &Config) -> View<G> {
 }
 
 #[wasm_bindgen(js_name = initApp)]
-pub fn init_app(config: &Config) {
+pub fn init_app(config: Config) {
     console_error_panic_hook::set_once();
 
     #[cfg(not(debug_assertions))]
@@ -126,12 +131,14 @@ pub fn init_app(config: &Config) {
     #[cfg(debug_assertions)]
     console_log::init_with_level(log::Level::Trace).unwrap();
 
+    let _ = APP_OPTIONS.set(config);
+
     sycamore::render(|ctx| {
         view! {ctx,
             // 按文档说明，un-cloak 属性用于解决初始化 uno 前的空白问题。
             // 文档：https://github.com/unocss/unocss/tree/main/packages/runtime
-            div(un-cloak=true) {
-                App(config)
+            main(un-cloak=true) {
+                App()
             }
         }
     });

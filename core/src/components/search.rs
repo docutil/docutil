@@ -7,7 +7,7 @@ use sycamore::{futures::spawn_local, prelude::*};
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::{Event, KeyboardEvent, RequestMode};
 
-static SEARCH_API_ENDPOINT: &str = "https://mn-search.lambdadriver.space/api/v1/yuekcc/search";
+use crate::config::APP_OPTIONS;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SearchApiQueryParam {
@@ -54,11 +54,10 @@ pub async fn remote_search(
         page_size,
     };
 
-    let endpoint = format!("{SEARCH_API_ENDPOINT}?{query_params}");
-    let req = Request::new(&endpoint)
-        .mode(RequestMode::Cors)
-        .send()
-        .await?;
+    let endpoint = APP_OPTIONS.get().unwrap().get_search_api_endpoint();
+
+    let endpoint = format!("{endpoint}?{query_params}");
+    let req = Request::new(&endpoint).mode(RequestMode::Cors).send().await?;
 
     let result = req.json::<SearchResult>().await;
     if result.is_ok() {

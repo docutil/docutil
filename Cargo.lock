@@ -86,6 +86,7 @@ dependencies = [
  "console_log",
  "gloo",
  "log",
+ "once_cell",
  "pulldown-cmark",
  "serde",
  "serde_urlencoded",
