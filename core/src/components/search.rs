@@ -103,9 +103,9 @@ fn SearchResultDialog<'a, G: Html>(ctx: Scope<'a>, props: SearchResultDialogProp
                 }
                 div(class="modal-card-body p-4 markdown-body") {
                     ul {
-                        Indexed {
-                            iterable: search_result,
-                            view: {
+                        Indexed (
+                            iterable=search_result,
+                            view={
                                 let on_close = on_close.clone();
                                 move |ctx, it| {
                                     let on_item_click = on_close.clone();
@@ -118,7 +118,7 @@ fn SearchResultDialog<'a, G: Html>(ctx: Scope<'a>, props: SearchResultDialogProp
                                     }
                                 }
                             },
-                        }
+                        )
                     }
                 }
             }

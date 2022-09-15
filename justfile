@@ -10,7 +10,9 @@ build-loader:
     npm run install-wasm
 
 build-default-theme:
-    cd loader && sass theme/style.scss src/style.css
+    #!/bin/sh
+    cd loader
+    npm run styles
 
 build-js: build-default-theme  build-loader
 
