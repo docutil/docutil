@@ -1,4 +1,3 @@
-/target
 /**/dist
 
 .vscode
@@ -7,3 +6,6 @@
 /mysite
 /docutil-example-site.tar.gz
 /docutil-dist.tar.gz
+node_modules
+target
+.rsw
