@@ -4,7 +4,7 @@
 .idea
 
 /mysite
-/docutil-example-site.tar.gz
+/docutil-example.tar.gz
 /docutil-dist.tar.gz
 node_modules
 target

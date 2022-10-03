@@ -39,7 +39,6 @@
   "devDependencies": {
     "esbuild": "^0.15.10",
     "esbuild-plugin-less": "^1.1.9",
-    "esbuild-plugin-wasm": "^1.0.0",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-prettier": "^4.0.0",
