@@ -1,6 +1,5 @@
 import { build } from 'esbuild';
 import { lessLoader } from 'esbuild-plugin-less';
-import { wasmLoader } from 'esbuild-plugin-wasm';
 import fs from 'fs';
 
 function installWasmFile() {
@@ -19,7 +18,7 @@ build({
   minify: true,
   outfile: 'dist/index.mjs',
   format: 'esm',
-  plugins: [lessLoader(), wasmLoader()],
+  plugins: [lessLoader()],
   loader: {
     '.svg': 'dataurl',
   },
