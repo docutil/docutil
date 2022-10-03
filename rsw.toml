@@ -1,0 +1,13 @@
+name = "rsw"
+version = "0.1.0"
+interval = 50
+
+cli = "pnpm"
+
+[new]
+using = "rsw"
+
+[[crates]]
+name = "@docutil/core"
+root = "."
+link = true

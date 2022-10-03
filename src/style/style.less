@@ -1,6 +1,6 @@
-@import '../node_modules/minireset.css/minireset.css';
-@import '../node_modules/github-markdown-css/github-markdown-light.css';
-@import 'github-markdown-light-patch';
+@import (inline) '../../node_modules/minireset.css/minireset.css';
+@import (inline) '../../node_modules/github-markdown-css/github-markdown-light.css';
+@import './_github-markdown-light-patch.less';
 
 :root {
   --color-gray: #adb5bd;
@@ -45,13 +45,13 @@ button {
 }
 
 .icon-top {
-  background-image: url('./icon/arrow-up.svg');
+  background-image: url('../assets/arrow-up.svg');
   background-position: center;
   background-size: contain;
 }
 
 .icon-close {
-  background-image: url('./icon/x.svg');
+  background-image: url('../assets/x.svg');
   background-position: center;
   background-size: contain;
 }

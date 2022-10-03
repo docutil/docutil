@@ -1,16 +1,13 @@
-import initUno from '@unocss/runtime';
-import preset from '@unocss/preset-mini';
+import init, { initApp, Config } from '@docutil/core';
 
-import initWasm, { initApp, Config } from '../../core/pkg';
-import './style.css';
+let INITED = false;
 
-initUno({
-  defaults: { presets: [preset()] },
-});
+export async function initCore() {
+  if (INITED) {
+    return;
+  }
 
-!(async () => {
-  await initWasm();
-
+  await init();
   const { title, root, footer, searchApiEndpoint } = window.config || {};
   const config = new Config()
     .setFooterMessage(footer || '')
@@ -19,4 +16,5 @@ initUno({
     .setSearchApiEndpoint(searchApiEndpoint || '');
 
   initApp(config);
-})();
+  INITED = true;
+}
