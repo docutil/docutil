@@ -28,7 +28,6 @@ demangle-name-section = false
 dwarf-debug-info = false
 
 [dependencies]
-wee_alloc = "0.4"
 console_error_panic_hook = "0.1"
 log = "*"
 console_log = "*"

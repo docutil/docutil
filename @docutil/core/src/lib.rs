@@ -11,9 +11,6 @@ mod router;
 mod util;
 use crate::{components::*, config::Config, router::Router, util::render_one_markdown};
 
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 fn on_popstate(f: Box<dyn FnMut()>) {
     let closure = Closure::wrap(f);
 
@@ -57,14 +54,8 @@ pub fn App<G: Html>(ctx: Scope) -> View<G> {
         on_popstate(update_route);
     }
 
-    let _main_md = {
-        let main_md = main_md.clone();
-        create_memo(ctx, move || (*main_md.get()).clone())
-    };
-    let _sidebar_md = {
-        let sidebar_md = sidebar_md.clone();
-        create_memo(ctx, move || (*sidebar_md.get()).clone())
-    };
+    let _main_md = { create_memo(ctx, move || (*main_md.get()).clone()) };
+    let _sidebar_md = { create_memo(ctx, move || (*sidebar_md.get()).clone()) };
 
     // 切换文章后，回到顶部
     create_effect(ctx, || {
