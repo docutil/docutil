@@ -2,14 +2,14 @@
 
 set -exo pipefail
 
-rsw build
+wasm-pack build --release core --mode no-install --scope docutil --target web
 
-test -d node_modules || pnpm i
+test -d node_modules || bun i
 
 test -d dist && rm -rf dist
 test -d example/dist && rm -rf example/dist
 
-pnpm build
+bun run build.mjs
 cp -r dist example
 
 tar -czf docutil-dist.tar.gz dist

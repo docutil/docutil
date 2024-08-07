@@ -63,13 +63,11 @@ docutil 按约定大于配置原则，文件布局如下：
 
 ## 构建
 
-工具链：
+构建需要：
 
-- nodejs 16+
-- pnpm 7+
-- rust 1.60+
-- rsw 0.7+
-  - cargo install rsw 可以安装 rsw 最新版本
+- [bun](https://bun.sh) 1.1+
+- [rust](https://www.rust-lang.org/) 1.80+
+- [wasm-pack](https://rustwasm.github.io/) 0.13+
 
 ```sh
 sh build.sh

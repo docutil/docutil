@@ -1,12 +1,12 @@
 {
   "name": "docutil",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "scripts": {
     "example": "sirv -D example",
-    "build": "node build.mjs"
+    "build": "bun run build.mjs"
   },
-  "author": "no_name",
+  "author": "yuekcc",
   "license": "MIT",
   "prettier": {
     "printWidth": 120,
@@ -36,8 +36,14 @@
       "plugin:prettier/recommended"
     ]
   },
-  "devDependencies": {
-    "esbuild": "^0.15.10",
+  "workspaces": ["core/*"],
+  "dependencies": {
+    "@docutil/core": "workspace:*",
+    "@unocss/preset-mini": "^0.45.26",
+    "@unocss/runtime": "^0.45.26",
+    "github-markdown-css": "^5.1.0",
+    "minireset.css": "^0.0.7",
+    "esbuild": "^0.23.0",
     "esbuild-plugin-less": "^1.1.9",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",
@@ -45,12 +51,5 @@
     "less": "^4.1.3",
     "prettier": "^2.0.0",
     "sirv-cli": "^2.0.2"
-  },
-  "dependencies": {
-    "@docutil/core": "link:@docutil/core/pkg",
-    "@unocss/preset-mini": "^0.45.26",
-    "@unocss/runtime": "^0.45.26",
-    "github-markdown-css": "^5.1.0",
-    "minireset.css": "^0.0.7"
   }
 }

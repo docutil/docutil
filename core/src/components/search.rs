@@ -57,7 +57,7 @@ pub async fn remote_search(
     let endpoint = APP_OPTIONS.get().unwrap().get_search_api_endpoint();
 
     let endpoint = format!("{endpoint}?{query_params}");
-    let req = Request::new(&endpoint).mode(RequestMode::Cors).send().await?;
+    let req = Request::get(&endpoint).mode(RequestMode::Cors).send().await?;
 
     let result = req.json::<SearchResult>().await;
     if result.is_ok() {
