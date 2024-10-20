@@ -1,6 +1,6 @@
-# Post-1 Foret permulcetque tenebat aut lupum
+# Post-1 Foret _permulcetque_ tenebat aut `lupum`
 
-## Darentur motatque colloquium mihi suum facta pondere
+## Darentur _motatque_ colloquium mihi suum facta pondere
 
 Lorem markdownum reddat quoque coniunx dum. Signans sub parentis veniet opem
 certamine cernis caedis auro qui! Viribus horum sanguine se thyrsos mentiturque
@@ -39,7 +39,7 @@ totiens, porrigit, te iam sacrificat.
 Flammae Lacedaemoniumque et admonet _lapsu Venus ab_ auro, tu amor non sit?
 Alcyonen sua istis limitibus mihi.
 
-## Illa non
+## 1 `Illa non`
 
 Quaeritis frustraque non totiens musco iaculatoremque _domus_, eo descendat
 fieri nuntia, hunc! Armis sua dumque materia certo genitor parilique abunde

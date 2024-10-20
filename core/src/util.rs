@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use gloo::net::http::Request;
-use pulldown_cmark::{html, CowStr, Event, HeadingLevel, Options, Parser, Tag};
+use pulldown_cmark::{html, CowStr, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -38,34 +38,50 @@ pub fn render_markdown(doc: &str) -> MarkdownPage {
     let mut outlines: Vec<Outline> = vec![];
     let mut some_heading: Option<Outline> = None;
 
-    let id = AtomicU32::new(1);
+    let header_id = AtomicU32::new(1);
 
     let parser = Parser::new_ext(doc, Options::all()).filter_map(|event| match event {
         // 处理 md 文件中的相对路径
-        Event::Start(Tag::Link(link_type, dest, title)) => {
-            if is_abs_uri(&dest) {
-                Some(Event::Start(Tag::Link(link_type, dest, title)))
+        Event::Start(Tag::Link {
+            link_type,
+            dest_url,
+            title,
+            id,
+        }) => {
+            if is_abs_uri(&dest_url) {
+                Some(Event::Start(Tag::Link {
+                    link_type: link_type,
+                    dest_url: dest_url,
+                    title: title,
+                    id: id,
+                }))
             } else {
-                let rewired = format!("/#/{}", dest).replace("//", "/");
-                Some(Event::Start(Tag::Link(link_type, rewired.into(), title)))
+                let rewired = format!("/#/{}", dest_url).replace("//", "/");
+                Some(Event::Start(Tag::Link {
+                    link_type: link_type,
+                    dest_url: rewired.into(),
+                    title: title,
+                    id: id,
+                }))
             }
         }
-        Event::Start(Tag::Heading(level, ..)) => {
-            if level != HeadingLevel::H1 {
-                some_heading = Some(Outline {
-                    anchor: String::new(),
-                    level,
-                    name: String::new(),
-                });
-                None
-            } else {
-                Some(event)
-            }
+        Event::Start(Tag::Heading {
+            level,
+            id: _,
+            classes: _,
+            attrs: _,
+        }) => {
+            some_heading = Some(Outline {
+                anchor: String::new(),
+                level,
+                name: String::new(),
+            });
+            None
         }
-        Event::End(Tag::Heading(level, ..)) => {
-            if level != HeadingLevel::H1 && some_heading.is_some() {
+        Event::End(TagEnd::Heading(_level)) => {
+            if some_heading.is_some() {
                 let outline = some_heading.take().unwrap();
-                let anchor = format!("{}_{}", outline.level, id.fetch_add(1, Ordering::Relaxed));
+                let anchor = format!("{}_{}", outline.level, header_id.fetch_add(1, Ordering::Relaxed));
 
                 outlines.push(Outline {
                     anchor: anchor.clone(),
@@ -86,7 +102,18 @@ pub fn render_markdown(doc: &str) -> MarkdownPage {
         Event::Text(ref text) => {
             if some_heading.is_some() {
                 let mut outline = some_heading.take().unwrap();
-                outline.name = text.clone().to_string();
+                outline.name = format!("{}{}", outline.name, text.clone().to_string());
+
+                some_heading = Some(outline);
+                None
+            } else {
+                Some(event)
+            }
+        }
+        Event::Code(ref code) => {
+            if some_heading.is_some() {
+                let mut outline = some_heading.take().unwrap();
+                outline.name = format!("{}{}", outline.name, code.clone().to_string());
 
                 some_heading = Some(outline);
                 None
