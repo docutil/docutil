@@ -1,13 +1,13 @@
 use gloo::history::{HashHistory, History};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct SearchParams {
     pub doc: Option<String>,
     pub sidebar: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Router {
     hash_history: HashHistory,
 }

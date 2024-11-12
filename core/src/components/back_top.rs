@@ -4,10 +4,10 @@ use sycamore::prelude::*;
 use wasm_bindgen::{prelude::*, JsCast};
 
 #[component]
-pub fn BackTop<G: Html>(ctx: Scope) -> View<G> {
-    let div_ref = create_node_ref(ctx);
+pub fn BackTop() -> View {
+    let div_ref = create_node_ref();
     let default_classes = "back-top-wrapper rounded border p-1";
-    let wrapper_classes = create_rc_signal(format!("{} hidden", default_classes));
+    let wrapper_classes = create_signal(format!("{} hidden", default_classes));
 
     {
         let on_scroll: Box<dyn Fn()> = Box::new({
@@ -38,9 +38,9 @@ pub fn BackTop<G: Html>(ctx: Scope) -> View<G> {
         }
     };
 
-    view! {ctx,
-        div(class=(*wrapper_classes.get()).clone(), title="回到顶部") {
-            div(ref=div_ref, on:click=move |_| {scroll_top()}) {
+    view! {
+        div(class=wrapper_classes.get_clone(), title="回到顶部") {
+            div(r#ref=div_ref, on:click=move |_| {scroll_top()}) {
                 span(class="icon-3x icon-top")
             }
         }

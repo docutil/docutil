@@ -3,7 +3,7 @@ use sycamore::prelude::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Prop, Clone, Default)]
+#[derive(Props, Clone, Default)]
 pub struct Config {
     footer_message: String,
     root_path: String,

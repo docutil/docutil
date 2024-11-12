@@ -21,14 +21,14 @@ fn is_abs_uri(uri: &str) -> bool {
     _uri.starts_with("https://") || _uri.starts_with("http://") || _uri.starts_with("//")
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Outline {
     pub name: String,
     pub level: HeadingLevel,
     pub anchor: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct MarkdownPage {
     pub html: String,
     pub outlines: Vec<Outline>,
